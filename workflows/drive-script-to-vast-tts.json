@@ -1,0 +1,155 @@
+{
+  "name": "Google Drive → Vast Fish TTS",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Probar un lote manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-1000, 0]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "search",
+        "queryString": "='REPLACE_WITH_SOURCE_FOLDER_ID' in parents and trashed = false",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "find-scripts",
+      "name": "Buscar guiones en Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [-760, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.flatMap(({ json }) => {\n  const name = json.name ?? '';\n  if (!/\\.(txt|md)$/i.test(name)) return [];\n  return [{ json: { ...json, sourceFileId: json.id, sourceFileName: name } }];\n});"
+      },
+      "id": "allow-script-files",
+      "name": "Aceptar sólo TXT y Markdown",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-520, 0]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "fileId": "={{ $json.sourceFileId }}",
+        "options": {}
+      },
+      "id": "download-script",
+      "name": "Descargar guion",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [-280, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "function hash(value) {\n  let result = 2166136261;\n  for (let index = 0; index < value.length; index += 1) {\n    result ^= value.charCodeAt(index);\n    result = Math.imul(result, 16777619);\n  }\n  return (result >>> 0).toString(16).padStart(8, '0');\n}\n\nreturn items.map((item) => {\n  const binary = item.binary?.data;\n  if (!binary?.data) throw new Error('Drive no devolvió el archivo en el campo binario data.');\n  const text = Buffer.from(binary.data, 'base64')\n    .toString('utf8')\n    .replace(/\\r\\n/g, '\\n')\n    .replace(/^---[\\s\\S]*?---\\s*/m, '')\n    .replace(/\\n{3,}/g, '\\n\\n')\n    .trim();\n  if (!text) throw new Error(`El guion ${item.json.sourceFileName ?? item.json.name} está vacío.`);\n  if (text.length > 5000) throw new Error(`El guion excede 5000 caracteres (${text.length}). Divídelo antes de generar voz.`);\n  const baseName = (item.json.sourceFileName ?? item.json.name ?? 'guion')\n    .replace(/\\.(txt|md)$/i, '')\n    .replace(/[^a-z0-9_-]+/gi, '-')\n    .replace(/^-|-$/g, '')\n    .slice(0, 80) || 'guion';\n  const scriptHash = hash(text);\n  return {\n    json: {\n      ...item.json,\n      scriptHash,\n      textLength: text.length,\n      ttsRequest: { text, reference_id: 'vtuber', format: 'wav' },\n      audioFileName: `${baseName}-${scriptHash}.wav`\n    }\n  };\n});"
+      },
+      "id": "prepare-tts",
+      "name": "Validar y preparar TTS",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-20, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://run.vast.ai/route/REPLACE_WITH_ENDPOINT_ID/v1/tts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.ttsRequest) }}",
+        "options": {
+          "timeout": 900000,
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "audio"
+            }
+          }
+        }
+      },
+      "id": "request-vast-tts",
+      "name": "Generar voz en Vast",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map((item) => ({\n  json: item.json,\n  binary: item.binary\n}));"
+      },
+      "id": "keep-audio-metadata",
+      "name": "Conservar metadatos y audio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "upload",
+        "inputDataFieldName": "audio",
+        "name": "={{ $json.audioFileName }}",
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "REPLACE_WITH_AUDIO_OUTPUT_FOLDER_ID"
+        },
+        "options": {}
+      },
+      "id": "upload-audio",
+      "name": "Guardar audio en Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "content": "## Configuración obligatoria\n\n1. Conecta la misma credencial Google Drive a los tres nodos de Drive.\n2. Sustituye los dos `REPLACE_WITH_..._FOLDER_ID`.\n3. Crea una credencial **Header Auth** para Vast: `Authorization` → `Bearer TU_VAST_API_KEY`, y selecciónala sólo en **Generar voz en Vast**.\n4. Reemplaza `REPLACE_WITH_ENDPOINT_ID` una vez creado el endpoint.\n\nEl flujo está inactivo y es manual. Sólo procesa `.txt` y `.md` de hasta 5.000 caracteres; no concatena audios ni realiza deduplicación automática.",
+        "height": 320,
+        "width": 430,
+        "color": 5
+      },
+      "id": "configuration-note",
+      "name": "Nota: configurar antes de ejecutar",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-240, -350]
+    }
+  ],
+  "connections": {
+    "Probar un lote manualmente": {
+      "main": [[{"node": "Buscar guiones en Drive", "type": "main", "index": 0}]]
+    },
+    "Buscar guiones en Drive": {
+      "main": [[{"node": "Aceptar sólo TXT y Markdown", "type": "main", "index": 0}]]
+    },
+    "Aceptar sólo TXT y Markdown": {
+      "main": [[{"node": "Descargar guion", "type": "main", "index": 0}]]
+    },
+    "Descargar guion": {
+      "main": [[{"node": "Validar y preparar TTS", "type": "main", "index": 0}]]
+    },
+    "Validar y preparar TTS": {
+      "main": [[{"node": "Generar voz en Vast", "type": "main", "index": 0}]]
+    },
+    "Generar voz en Vast": {
+      "main": [[{"node": "Conservar metadatos y audio", "type": "main", "index": 0}]]
+    },
+    "Conservar metadatos y audio": {
+      "main": [[{"node": "Guardar audio en Drive", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+}

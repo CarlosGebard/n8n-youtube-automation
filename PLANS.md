@@ -10,6 +10,7 @@ Publicar una imagen de worker reproducible para Vast Serverless que ejecute Fish
 - Arranque de Fish, comprobación de salud y registro idempotente de una referencia privada opcional.
 - Configuración PyWorker para proxyar `POST /v1/tts` al servidor Fish local de forma secuencial.
 - Contrato JSON compatible con n8n, pruebas unitarias de normalización y documentación de despliegue.
+- Workflow de n8n importable e inactivo para transformar archivos de guion de Google Drive en audio.
 
 ## Assumptions
 
@@ -22,8 +23,9 @@ Publicar una imagen de worker reproducible para Vast Serverless que ejecute Fish
 1. Crear el contrato de solicitud JSON y el proxy PyWorker para `/v1/tts`.
 2. Crear la imagen y script de arranque para Fish S2-Pro y el registro de referencia.
 3. Excluir artefactos sensibles y documentar las variables y montajes requeridos.
-4. Ejecutar validaciones estáticas y publicar la imagen en un registro antes de crear la plantilla Vast.
-5. Probar en una instancia interactiva antes de habilitar Serverless con escala cero.
+4. Crear un workflow manual de Drive a TTS con IDs y credenciales vacíos, para que no genere gastos al importarlo.
+5. Ejecutar validaciones estáticas y publicar la imagen en un registro antes de crear la plantilla Vast.
+6. Probar en una instancia interactiva antes de habilitar Serverless con escala cero.
 
 ## Validation
 
