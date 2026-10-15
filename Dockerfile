@@ -1,5 +1,8 @@
 FROM fishaudio/fish-speech:server-cuda
 
+LABEL org.opencontainers.image.source="https://github.com/CarlosGebard/n8n-youtube-automation" \
+      org.opencontainers.image.description="Fish Audio S2-Pro worker for Vast Serverless"
+
 WORKDIR /app
 
 USER root
