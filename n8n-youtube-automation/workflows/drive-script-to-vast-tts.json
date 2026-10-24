@@ -1,5 +1,5 @@
 {
-  "name": "Google Drive → Vast Fish TTS",
+  "name": "04 — Google Drive → Vast Fish TTS",
   "active": false,
   "nodes": [
     {
@@ -8,7 +8,10 @@
       "name": "Probar un lote manualmente",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [-1000, 0]
+      "position": [
+        -1000,
+        0
+      ]
     },
     {
       "parameters": {
@@ -22,7 +25,10 @@
       "name": "Buscar guiones en Drive",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [-760, 0]
+      "position": [
+        -760,
+        0
+      ]
     },
     {
       "parameters": {
@@ -32,7 +38,10 @@
       "name": "Aceptar sólo TXT y Markdown",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-520, 0]
+      "position": [
+        -520,
+        0
+      ]
     },
     {
       "parameters": {
@@ -45,7 +54,10 @@
       "name": "Descargar guion",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [-280, 0]
+      "position": [
+        -280,
+        0
+      ]
     },
     {
       "parameters": {
@@ -55,7 +67,10 @@
       "name": "Validar y preparar TTS",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-20, 0]
+      "position": [
+        -20,
+        0
+      ]
     },
     {
       "parameters": {
@@ -80,7 +95,10 @@
       "name": "Generar voz en Vast",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [260, 0]
+      "position": [
+        260,
+        0
+      ]
     },
     {
       "parameters": {
@@ -90,7 +108,10 @@
       "name": "Conservar metadatos y audio",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [520, 0]
+      "position": [
+        520,
+        0
+      ]
     },
     {
       "parameters": {
@@ -109,7 +130,10 @@
       "name": "Guardar audio en Drive",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [780, 0]
+      "position": [
+        780,
+        0
+      ]
     },
     {
       "parameters": {
@@ -122,34 +146,93 @@
       "name": "Nota: configurar antes de ejecutar",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [-240, -350]
+      "position": [
+        -240,
+        -350
+      ]
     }
   ],
   "connections": {
     "Probar un lote manualmente": {
-      "main": [[{"node": "Buscar guiones en Drive", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Buscar guiones en Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Buscar guiones en Drive": {
-      "main": [[{"node": "Aceptar sólo TXT y Markdown", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Aceptar sólo TXT y Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Aceptar sólo TXT y Markdown": {
-      "main": [[{"node": "Descargar guion", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Descargar guion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Descargar guion": {
-      "main": [[{"node": "Validar y preparar TTS", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Validar y preparar TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Validar y preparar TTS": {
-      "main": [[{"node": "Generar voz en Vast", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Generar voz en Vast",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Generar voz en Vast": {
-      "main": [[{"node": "Conservar metadatos y audio", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Conservar metadatos y audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Conservar metadatos y audio": {
-      "main": [[{"node": "Guardar audio en Drive", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Guardar audio en Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1"
+  "versionId": "drive-vast-tts-002"
 }

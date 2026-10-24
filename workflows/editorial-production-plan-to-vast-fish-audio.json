@@ -1,0 +1,114 @@
+{
+  "name": "05 — Production Plan → Vast Fish Audio",
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "nodes": [
+    {
+      "id": "manual-trigger",
+      "name": "Probar audio manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 300],
+      "parameters": {}
+    },
+    {
+      "id": "claim-voice-job",
+      "name": "Reclamar Production Plan aprobado",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [240, 300],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM claim_editorial_voice_job(CAST({{ $execution.id }} AS text));",
+        "options": { "queryBatching": "single" }
+      },
+      "credentials": {
+        "postgres": { "id": "W4eY9DPXPYbLfnbj", "name": "Postgres account" }
+      }
+    },
+    {
+      "id": "compile-fish",
+      "name": "Validar y compilar Fish",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300],
+      "parameters": {
+        "jsCode": "const allowedTags = new Set(['[excited]', '[angry]', '[sad]', '[surprised]', '[sigh]', '[chuckle]', '[laughing]', '[short pause]', '[pause]', '[whisper]', '[emphasis]', '[professional broadcast tone]']);\n\nreturn items.map((item) => {\n  const script = item.json.script_text;\n  const plan = item.json.production_response;\n  if (typeof script !== 'string' || !script) throw new Error('The approved creative narration is missing.');\n  if (!plan || plan.status !== 'READY' || !Array.isArray(plan.beats) || plan.beats.length === 0) throw new Error('The Production Plan is not READY or has no beats.');\n\n  const beatText = plan.beats.map((beat) => {\n    if (!beat || typeof beat.spoken_text !== 'string') throw new Error('Every beat requires spoken_text.');\n    return beat.spoken_text;\n  }).join('');\n  if (beatText !== script) throw new Error('Production beats do not reconstruct the approved narration exactly.');\n\n  const insertions = [];\n  let beatOffset = 0;\n  for (const beat of plan.beats) {\n    const tags = beat.voice?.fish_tags ?? [];\n    if (!Array.isArray(tags)) throw new Error('fish_tags must be an array.');\n    for (let order = 0; order < tags.length; order += 1) {\n      const control = tags[order];\n      if (!allowedTags.has(control.tag)) throw new Error(`Fish tag is not allowed: ${control.tag}`);\n      if (!['before', 'after'].includes(control.position)) throw new Error(`Invalid Fish tag position: ${control.position}`);\n      if (typeof control.anchor_text !== 'string' || !control.anchor_text) throw new Error('Fish tag anchor_text is required.');\n      const localOffset = beat.spoken_text.indexOf(control.anchor_text);\n      if (localOffset < 0) throw new Error(`Fish tag anchor was not found: ${control.anchor_text}`);\n      insertions.push({ offset: beatOffset + localOffset + (control.position === 'after' ? control.anchor_text.length : 0), tag: control.tag, order });\n    }\n    beatOffset += beat.spoken_text.length;\n  }\n\n  let compiled = script;\n  for (const insertion of insertions.sort((a, b) => b.offset - a.offset || b.order - a.order)) {\n    compiled = `${compiled.slice(0, insertion.offset)}${insertion.tag}${compiled.slice(insertion.offset)}`;\n  }\n  const scriptId = String(item.json.script_id);\n  const executionId = String($execution.id);\n  return {\n    json: {\n      ...item.json,\n      compiled_text: compiled,\n      audio_uri: `/n8n-youtube-automation/Honi-News/Audio/${scriptId}-${executionId}.wav`,\n      adapter_request: { script_id: scriptId, text: compiled, voice_id: 'honi', format: 'wav' }\n    }\n  };\n});"
+      }
+    },
+    {
+      "id": "generate-audio",
+      "name": "Generar audio en adaptador Vast",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [780, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.VAST_FISH_ADAPTER + '/v1/generate' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.adapter_request) }}",
+        "options": {
+          "response": { "response": { "responseFormat": "file", "outputPropertyName": "audio" } },
+          "timeout": 900000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": { "id": "REPLACE_WITH_VAST_FISH_ADAPTER_AUTH", "name": "Vast Fish Adapter Auth" }
+      }
+    },
+    {
+      "id": "store-audio",
+      "name": "Guardar WAV en Nextcloud",
+      "type": "n8n-nodes-base.nextCloud",
+      "typeVersion": 1,
+      "position": [1060, 300],
+      "parameters": {
+        "resource": "file",
+        "operation": "upload",
+        "path": "={{ $json.audio_uri }}",
+        "binaryDataUpload": true,
+        "binaryPropertyName": "audio"
+      },
+      "credentials": {
+        "nextCloudApi": { "id": "EK8g12mTQNuoNYGX", "name": "NextCloud account" }
+      }
+    },
+    {
+      "id": "complete-job",
+      "name": "Registrar audio completado",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1320, 300],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH updated AS (UPDATE voice_jobs SET status = 'completed', provider = 'vast-fish-adapter', model = 'fish-s2-pro', voice_id = 'honi', audio_uri = '{{ $('Validar y compilar Fish').item.json.audio_uri }}', completed_at_utc = now(), updated_at_utc = now() WHERE id = {{ $('Validar y compilar Fish').item.json.voice_job_id }} AND status = 'processing' RETURNING script_type, script_id, individual_script_id) UPDATE daily_news_scripts script SET status = 'voiced', updated_at_utc = now() FROM updated WHERE updated.script_type = 'daily_news' AND script.id = updated.script_id; UPDATE individual_scripts script SET status = 'voiced', updated_at_utc = now() FROM voice_jobs job WHERE job.id = {{ $('Validar y compilar Fish').item.json.voice_job_id }} AND job.script_type = 'individual' AND script.id = job.individual_script_id;",
+        "options": { "queryBatching": "single" }
+      },
+      "credentials": {
+        "postgres": { "id": "W4eY9DPXPYbLfnbj", "name": "Postgres account" }
+      }
+    },
+    {
+      "id": "note",
+      "name": "Configuración requerida",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [480, 80],
+      "parameters": {
+        "width": 760,
+        "height": 150,
+        "content": "## Contrato seguro de audio\n\n- Sólo reclama narración Creative aprobada con Production Plan `ready`.\n- El compilador rechaza cualquier beat que no reconstruya la narración exacta, anchors ausentes o tags Fish no permitidos.\n- Configure `VAST_FISH_ADAPTER` como URL base y la credencial Header Auth sin exportar secretos.\n- Mantenga el workflow inactivo hasta una prueba manual autorizada."
+      }
+    }
+  ],
+  "connections": {
+    "Probar audio manualmente": { "main": [[{ "node": "Reclamar Production Plan aprobado", "type": "main", "index": 0 }]] },
+    "Reclamar Production Plan aprobado": { "main": [[{ "node": "Validar y compilar Fish", "type": "main", "index": 0 }]] },
+    "Validar y compilar Fish": { "main": [[{ "node": "Generar audio en adaptador Vast", "type": "main", "index": 0 }]] },
+    "Generar audio en adaptador Vast": { "main": [[{ "node": "Guardar WAV en Nextcloud", "type": "main", "index": 0 }]] },
+    "Guardar WAV en Nextcloud": { "main": [[{ "node": "Registrar audio completado", "type": "main", "index": 0 }]] }
+  }
+}

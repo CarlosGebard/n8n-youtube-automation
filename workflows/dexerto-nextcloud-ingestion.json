@@ -1,0 +1,405 @@
+{
+  "name": "01 — Dexerto — ingesta editorial",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "di1",
+      "name": "Probar ingesta manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "di2",
+      "name": "Revisar novedades cada 15 min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -900,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "di3a",
+              "name": "sitemapUrl",
+              "value": "https://www.dexerto.com/news-sitemap.xml",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "di3",
+      "name": "Usar sitemap Dexerto",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -680,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.sitemapUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "di4",
+      "name": "Descargar sitemap Dexerto",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -450,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "xmlToJson",
+        "dataPropertyName": "data",
+        "options": {}
+      },
+      "id": "di5",
+      "name": "Convertir sitemap XML",
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -230,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;\nconst gamingPaths = /\\/(gaming|fortnite|gta|pokemon|call-of-duty|overwatch|apex-legends|valorant|league-of-legends|counter-strike-2|minecraft|world-of-warcraft|diablo|destiny|battlefield|roblox|palworld)\\//;\nreturn items.flatMap(({ json }) => (json.urlset?.url ?? []).flatMap((entry) => {\n  const articleUrl = entry.loc;\n  const publishedAt = entry.lastmod ?? entry[\"news:news\"]?.[\"news:publication_date\"];\n  if (!articleUrl || !publishedAt || !gamingPaths.test(articleUrl) || Date.parse(publishedAt) < cutoff) return [];\n  const title = articleUrl.split(\"/\").filter(Boolean).at(-1).replace(/-\\d+$/, \"\").replace(/-/g, \" \");\n  return [{ json: { source: \"Dexerto\", articleUrl, title, publishedAt: new Date(publishedAt).toISOString(), imageUrl: entry[\"image:image\"]?.[\"image:loc\"] ?? null } }];\n}));"
+      },
+      "id": "di6",
+      "name": "Filtrar Gaming y últimos 7 días",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.articleUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "articleHtml"
+            }
+          }
+        }
+      },
+      "id": "di7",
+      "name": "Descargar página del artículo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "di8",
+      "name": "Unir metadatos y HTML",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        440,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function findBody(value) { if (Array.isArray(value)) { for (const x of value) { const found = findBody(x); if (found) return found; } } if (!value || typeof value !== 'object') return null; const types = Array.isArray(value['@type']) ? value['@type'] : [value['@type']]; if (types.some((x) => x === 'NewsArticle' || x === 'Article') && typeof value.articleBody === 'string') return value.articleBody; for (const x of Object.values(value)) { const found = findBody(x); if (found) return found; } return null; }\nfunction decode(text) { return text.replace(/&nbsp;/gi,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'\\\"').replace(/&#39;|&apos;/gi,\"'\").replace(/&lt;/gi,'<').replace(/&gt;/gi,'>'); }\nreturn items.flatMap(({json}) => { const html=json.articleHtml ?? ''; let body=null; for (const m of html.matchAll(/<script[^>]*type=[\\x22']application\\/ld\\+json[\\x22'][^>]*>([\\s\\S]*?)<\\/script>/gi)) { try { body=findBody(JSON.parse(m[1])); if (body) break; } catch {} } if (!body) body=decode((html.match(/<div id=[\\x22']article-content[\\x22'][^>]*>([\\s\\S]*?)(?=<div[^>]+id=[\\x22']article-note[\\x22'])/i)?.[1] ?? '').replace(/<[^>]+>/g,' ')); body=body?.replace(/\\s+/g,' ').trim(); if (!body || body.length < 200) return []; const {articleHtml,...article}=json; return [{json:{...article,articleText:body}}]; });"
+      },
+      "id": "di9",
+      "name": "Extraer contenido del artículo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        670,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(({json}) => { const slug=json.articleUrl.split('/').filter(Boolean).at(-1).replace(/-\\d+$/,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').slice(0,100); const day=json.publishedAt.slice(0,10); const base=`/n8n-youtube-automation/Honi-News/Dexerto-Articles/${day}-${slug}`; const articleId=`dexerto-${day}-${slug}`; const articleMarkdown=`# ${json.title}\\n\\n- Source: ${json.source}\\n- URL: ${json.articleUrl}\\n- Published: ${json.publishedAt}\\n- Image: ${json.imageUrl ?? 'Unavailable'}\\n\\n## Article\\n${json.articleText}\\n`; const sourceJson=JSON.stringify({article_id:articleId,source:json.source,title:json.title,canonical_url:json.articleUrl,published_at_utc:json.publishedAt,image_url:json.imageUrl,ingested_at_utc:new Date().toISOString()},null,2); return {json:{...json,articleId,articleMarkdown,sourceJson,markdownPath:`${base}.md`,metadataPath:`${base}.json`}}; });"
+      },
+      "id": "di10",
+      "name": "Preparar objetos editoriales",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "upload",
+        "path": "={{ $json.markdownPath }}",
+        "binaryDataUpload": false,
+        "fileContent": "={{ $json.articleMarkdown }}"
+      },
+      "id": "di11",
+      "name": "Guardar Markdown en Nextcloud",
+      "type": "n8n-nodes-base.nextCloud",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        -20
+      ],
+      "credentials": {
+        "nextCloudApi": {
+          "id": "EK8g12mTQNuoNYGX",
+          "name": "NextCloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "upload",
+        "path": "={{ $node['Preparar objetos editoriales'].json.metadataPath }}",
+        "binaryDataUpload": false,
+        "fileContent": "={{ $node['Preparar objetos editoriales'].json.sourceJson }}"
+      },
+      "id": "di12",
+      "name": "Guardar metadatos en Nextcloud",
+      "type": "n8n-nodes-base.nextCloud",
+      "typeVersion": 1,
+      "position": [
+        1370,
+        -20
+      ],
+      "credentials": {
+        "nextCloudApi": {
+          "id": "EK8g12mTQNuoNYGX",
+          "name": "NextCloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH article_upsert AS (INSERT INTO articles (article_id, canonical_url, source, title, published_at_utc, expires_at_utc) VALUES ($1, $2, $3, $4, $5::timestamptz, $5::timestamptz + interval '72 hours') ON CONFLICT (canonical_url) DO UPDATE SET title = EXCLUDED.title, published_at_utc = EXCLUDED.published_at_utc, expires_at_utc = EXCLUDED.expires_at_utc, updated_at_utc = now() RETURNING id), content_state AS (SELECT article_upsert.id AS article_id, existing.content_fingerprint IS DISTINCT FROM md5($8) AS content_changed FROM article_upsert LEFT JOIN article_contents AS existing ON existing.article_id = article_upsert.id), content_upsert AS (INSERT INTO article_contents (article_id, markdown_uri, metadata_uri, content_fingerprint, content_bytes, status, stored_at_utc) SELECT article_id, $6, $7, md5($8), length($8), 'stored', now() FROM content_state ON CONFLICT (article_id) DO UPDATE SET markdown_uri = EXCLUDED.markdown_uri, metadata_uri = EXCLUDED.metadata_uri, content_fingerprint = EXCLUDED.content_fingerprint, content_bytes = EXCLUDED.content_bytes, status = 'stored', stored_at_utc = now(), last_error = NULL, updated_at_utc = now() RETURNING article_id) INSERT INTO article_classification_jobs (article_id, status) SELECT content_upsert.article_id, 'pending' FROM content_upsert JOIN content_state USING (article_id) WHERE content_state.content_changed ON CONFLICT (article_id) DO UPDATE SET status = 'pending', attempts = 0, lock_token = NULL, locked_at_utc = NULL, last_error = NULL, latest_classification_id = NULL, updated_at_utc = now();",
+        "options": {
+          "queryBatching": "single",
+          "queryReplacement": "={{ [$node['Preparar objetos editoriales'].json.articleId, $node['Preparar objetos editoriales'].json.articleUrl, $node['Preparar objetos editoriales'].json.source, $node['Preparar objetos editoriales'].json.title, $node['Preparar objetos editoriales'].json.publishedAt, $node['Preparar objetos editoriales'].json.markdownPath, $node['Preparar objetos editoriales'].json.metadataPath, $node['Preparar objetos editoriales'].json.articleMarkdown] }}"
+        }
+      },
+      "id": "di13",
+      "name": "Registrar artículo editorial",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1600,
+        -20
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 01 — Ingesta editorial\n\nGuarda un Markdown y metadatos JSON en Nextcloud antes de registrar `content_status=stored` y `classification_status=pending` en PostgreSQL.\n\nCrea antes `/n8n-youtube-automation/Honi-News/Dexerto-Articles`. La clasificación se realiza en el workflow 02.",
+        "height": 220,
+        "width": 440,
+        "color": 5
+      },
+      "id": "di14",
+      "name": "Nota: configuración Nextcloud",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        230
+      ]
+    }
+  ],
+  "connections": {
+    "Probar ingesta manual": {
+      "main": [
+        [
+          {
+            "node": "Usar sitemap Dexerto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revisar novedades cada 15 min": {
+      "main": [
+        [
+          {
+            "node": "Usar sitemap Dexerto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usar sitemap Dexerto": {
+      "main": [
+        [
+          {
+            "node": "Descargar sitemap Dexerto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar sitemap Dexerto": {
+      "main": [
+        [
+          {
+            "node": "Convertir sitemap XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convertir sitemap XML": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Gaming y últimos 7 días",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Gaming y últimos 7 días": {
+      "main": [
+        [
+          {
+            "node": "Descargar página del artículo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Unir metadatos y HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar página del artículo": {
+      "main": [
+        [
+          {
+            "node": "Unir metadatos y HTML",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Unir metadatos y HTML": {
+      "main": [
+        [
+          {
+            "node": "Extraer contenido del artículo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer contenido del artículo": {
+      "main": [
+        [
+          {
+            "node": "Preparar objetos editoriales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar objetos editoriales": {
+      "main": [
+        [
+          {
+            "node": "Guardar Markdown en Nextcloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Markdown en Nextcloud": {
+      "main": [
+        [
+          {
+            "node": "Guardar metadatos en Nextcloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar metadatos en Nextcloud": {
+      "main": [
+        [
+          {
+            "node": "Registrar artículo editorial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dexerto-ingestion-001",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

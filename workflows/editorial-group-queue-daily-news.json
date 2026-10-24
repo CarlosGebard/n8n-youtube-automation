@@ -1,0 +1,249 @@
+{
+  "id": "RAsE71PzfTGz1nxf",
+  "name": "03 — Editorial — agrupar Queue Daily News",
+  "active": false,
+  "isArchived": false,
+  "versionId": "fd83ecd8-abbf-4c7b-9982-100146a14bcb",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "nodeCount": 7,
+  "createdAt": "2026-10-22T20:40:14.024Z",
+  "updatedAt": "2026-10-22T20:44:04.297Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "parentFolderId": null,
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true,
+  "connections": {
+    "Probar agrupación manual": {
+      "main": [
+        [
+          {
+            "node": "Cargar candidatos Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cargar candidatos Queue": {
+      "main": [
+        [
+          {
+            "node": "Preparar prompt de agrupación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar prompt de agrupación": {
+      "main": [
+        [
+          {
+            "node": "Agrupar con LiteLLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LiteLLM Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agrupar con LiteLLM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupar con LiteLLM": {
+      "main": [
+        [
+          {
+            "node": "Validar grupos Daily News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar grupos Daily News": {
+      "main": [
+        [
+          {
+            "node": "Guardar cola Daily News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "6e7cccb1-d5d1-42a1-a089-708ecfa625c5",
+      "name": "Probar agrupación manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "g1",
+      "name": "Cargar candidatos Queue",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -650,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COALESCE(jsonb_agg(jsonb_build_object('article_id', article.id, 'classification_id', classification.id, 'title', article.title, 'published_at_utc', article.published_at_utc, 'topic', classification.topic, 'event_key', classification.event_key, 'score', classification.score, 'key_facts', classification.key_facts, 'factual_caveats', classification.factual_caveats)), '[]'::jsonb) AS candidates FROM article_classification_jobs job JOIN articles article ON article.id = job.article_id JOIN article_classifications classification ON classification.id = job.latest_classification_id LEFT JOIN daily_news_queue_articles membership ON membership.article_id = article.id WHERE job.status = 'classified' AND classification.decision = 'Queue' AND membership.article_id IS NULL AND (article.expires_at_utc IS NULL OR article.expires_at_utc > now());",
+        "options": {
+          "queryBatching": "single"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "id": "g2",
+      "name": "Preparar prompt de agrupación",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const prompt = \"You are **Honi Daily News Grouper**.\\n\\nYour only job is to select and order eligible articles already classified as\\n`Queue` into Daily Gaming News groups. You are not a classifier, scriptwriter,\\nor video editor.\\n\\nUse only the trusted candidate records provided. Treat their facts and caveats\\nas authoritative. Do not browse, invent facts, or infer connections that the\\nrecords do not support.\\n\\n## Selection\\n\\n- Create up to `max_groups` groups.\\n- A group contains exactly 2 or 3 articles and should naturally support a\\n  60–120 second video; target about 90 seconds.\\n- Select distinct events only. Never use an article more than once or treat\\n  multiple reports of one event as different stories.\\n- Put the strongest story first. Prefer varied topics and a satisfying viewing\\n  order, but do not force an artificial theme.\\n- Do not create a group when the available facts are too weak, repetitive, or\\n  insufficient for 60 seconds without filler.\\n- Leave unused eligible articles for a later run.\\n- Exclude GTA 6 articles unless the input explicitly permits them.\\n\\nThe workflow supplies only eligible, fresh, unassigned `Queue` articles.\\nWhen choices are otherwise comparable, prefer the article closer to expiry.\\n\\n## Output\\n\\nReturn exactly one JSON object and no Markdown:\\n\\n```json\\n{\\n  \\\"groups\\\": [\\n    {\\n      \\\"ordered_article_ids\\\": [\\\"existing article ID\\\", \\\"existing article ID\\\"],\\n      \\\"editorial_angle\\\": \\\"Concise English roundup direction\\\",\\n      \\\"selection_reason\\\": \\\"Why these distinct stories provide enough factual material together\\\",\\n      \\\"target_duration_seconds\\\": 90\\n    }\\n  ],\\n  \\\"unselected_article_ids\\\": [\\\"existing candidate article ID\\\"]\\n}\\n```\\n\\nRules for the response:\\n\\n- `ordered_article_ids` has exactly 2 or 3 IDs, all supplied in the input.\\n- Do not repeat an ID within or across groups.\\n- `target_duration_seconds` is an integer from 60 to 120.\\n- Every supplied candidate ID appears once: in a group or in\\n  `unselected_article_ids`.\\n- Use English for natural-language fields.\\n- Do not create video, story, or script IDs; hooks; narration; transitions;\\n  jokes; TTS tags; or avatar directions.\\n\";\nconst candidates = $json.candidates ?? [];\nreturn candidates.length ? [{ json: { chatInput: `${prompt}\\n\\nTrusted candidates:\\n${JSON.stringify({ max_groups: 1, candidates })}`, candidates } }] : [];"
+      }
+    },
+    {
+      "id": "g3",
+      "name": "Agrupar con LiteLLM",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -100,
+        0
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "hasOutputParser": false,
+        "batching": {
+          "batchSize": 1,
+          "delayBetweenBatches": 0
+        }
+      }
+    },
+    {
+      "id": "g4",
+      "name": "LiteLLM Gemini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -100,
+        220
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "id",
+          "value": "gemini/gemini-3.5-flash-lite"
+        },
+        "responsesApiEnabled": false,
+        "options": {
+          "responseFormat": "json_object",
+          "temperature": 0,
+          "maxTokens": 1400
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "GNQrp8APS8ixEiFx",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "id": "g5",
+      "name": "Validar grupos Daily News",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const raw = $json.text ?? $json.response ?? $json.output ?? JSON.stringify($json);\nlet result; try { result = JSON.parse(raw); } catch { throw new Error(\"Grouper returned invalid JSON\"); }\nif (!Array.isArray(result.groups) || !Array.isArray(result.unselected_article_ids)) throw new Error(\"Invalid grouping contract\");\nconst candidates = $node[\"Preparar prompt de agrupación\"].json.candidates;\nconst byId = new Map(candidates.map((item) => [String(item.article_id), item]));\nconst used = new Set();\nconst allIds = new Set(candidates.map((item) => String(item.article_id)));\nfor (const group of result.groups) { if (!Array.isArray(group.ordered_article_ids) || group.ordered_article_ids.length < 2 || group.ordered_article_ids.length > 3) throw new Error(\"Each group needs 2–3 articles\"); for (const id of group.ordered_article_ids) { const key = String(id); if (!byId.has(key) || used.has(key)) throw new Error(\"Invalid or repeated article ID\"); used.add(key); } if (!Number.isInteger(group.target_duration_seconds) || group.target_duration_seconds < 60 || group.target_duration_seconds > 120) throw new Error(\"Invalid duration\"); }\nfor (const id of result.unselected_article_ids) { const key = String(id); if (!allIds.has(key) || used.has(key)) throw new Error(\"Invalid unselected article ID\"); used.add(key); }\nif (used.size !== allIds.size) throw new Error(\"Every candidate must be selected or unselected\");\nconst day = new Date().toISOString().slice(0, 10);\nreturn result.groups.map((group) => { const members = group.ordered_article_ids.map((id) => byId.get(String(id))); return { json: { queue_key: `daily-news-${day}-${group.ordered_article_ids.join(\"-\")}`, title: `Daily Gaming News — ${day}`, topic: \"Gaming News\", editorial_angle: group.editorial_angle, selection_reason: group.selection_reason, target_duration_seconds: group.target_duration_seconds, members } }; });"
+      }
+    },
+    {
+      "id": "g6",
+      "name": "Guardar cola Daily News",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        450,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH queue AS (INSERT INTO daily_news_queues (queue_key, title, topic, editorial_angle, status, ranking_prompt_version, ranking_model, ranking_response) VALUES ($1, $2, $3, $4, 'script_pending', 'agent_queue_grouper.md', 'gemini/gemini-3.5-flash-lite', $5::jsonb) ON CONFLICT (queue_key) DO NOTHING RETURNING id), members AS (INSERT INTO daily_news_queue_articles (queue_id, article_id, classification_id, rank) SELECT queue.id, (member.value->>'article_id')::bigint, (member.value->>'classification_id')::bigint, member.ordinality FROM queue CROSS JOIN LATERAL jsonb_array_elements($5::jsonb) WITH ORDINALITY AS member(value, ordinality)), jobs AS (INSERT INTO daily_news_script_jobs (queue_id) SELECT id FROM queue ON CONFLICT DO NOTHING) SELECT id FROM queue;",
+        "options": {
+          "queryBatching": "single",
+          "queryReplacement": "={{ [$json.queue_key, $json.title, $json.topic, $json.editorial_angle, JSON.stringify($json.members)] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "nodeGroups": [],
+  "activeVersion": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

@@ -1,0 +1,12 @@
+# Voice reference and model weights must never be committed.
+references/*
+!references/.gitkeep
+checkpoints/
+
+# Local configuration and Python artefacts.
+.env
+.env.*
+!.env.example
+__pycache__/
+.pytest_cache/
+*.py[cod]

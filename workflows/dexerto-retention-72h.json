@@ -1,0 +1,178 @@
+{
+  "name": "05 — Dexerto — purgar publicaciones tras 72 h (Google Drive histórico)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "retention-manual",
+      "name": "Probar purga manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "10 0 * * *"
+            }
+          ]
+        }
+      },
+      "id": "retention-schedule",
+      "name": "Purgar cada día a las 00:10",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -660,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "operation": "search",
+        "searchMethod": "query",
+        "queryString": "",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1ANeuCiHWnNV5tJgo3f3iU2kexkleVOC2"
+          },
+          "whatToSearch": "files",
+          "includeTrashed": false
+        },
+        "options": {}
+      },
+      "id": "retention-list",
+      "name": "Listar documentos de Gaming-News",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -380,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "le2ZvhtUy3sGw7DT",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst cutoff = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 3));\n\nreturn items.filter(({ json }) => {\n  const match = String(json.name ?? '').match(/^(\\d{4}-\\d{2}-\\d{2})-/);\n  if (!match) return false;\n\n  const publishedDate = new Date(`${match[1]}T00:00:00.000Z`);\n  return !Number.isNaN(publishedDate.getTime()) && publishedDate < cutoff;\n});"
+      },
+      "id": "retention-filter",
+      "name": "Filtrar publicados hace más de 72 h",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "deletePermanently": false
+        }
+      },
+      "id": "retention-trash",
+      "name": "Enviar documentos antiguos a papelera",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        180,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "le2ZvhtUy3sGw7DT",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Retención de 72 h\n\nCada día a las **00:10** (zona horaria de n8n) se conservan los últimos tres días calendario.\n\nEjemplo: el 15 de octubre se envían a la papelera las publicaciones del 11 de octubre o anteriores.\n\nLa fecha se toma del prefijo `YYYY-MM-DD-` del nombre del documento. Los archivos con otro formato se omiten.",
+        "height": 220,
+        "width": 360,
+        "color": 5
+      },
+      "id": "retention-note",
+      "name": "Nota: política de retención",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        -260
+      ]
+    }
+  ],
+  "connections": {
+    "Probar purga manual": {
+      "main": [
+        [
+          {
+            "node": "Listar documentos de Gaming-News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Purgar cada día a las 00:10": {
+      "main": [
+        [
+          {
+            "node": "Listar documentos de Gaming-News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar documentos de Gaming-News": {
+      "main": [
+        [
+          {
+            "node": "Filtrar publicados hace más de 72 h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar publicados hace más de 72 h": {
+      "main": [
+        [
+          {
+            "node": "Enviar documentos antiguos a papelera",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [],
+  "versionId": "dexerto-retention-002"
+}

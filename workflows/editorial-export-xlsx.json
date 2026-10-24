@@ -1,0 +1,173 @@
+{
+  "name": "03 — Editorial — exportar catálogo XLSX",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "ex1a",
+      "name": "Exportar catálogo cada hora",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -520,
+        160
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "ex1",
+      "name": "Exportar catálogo manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT a.article_id, a.title, a.canonical_url AS source_url, a.source, a.published_at_utc, a.ingested_at_utc, c.markdown_uri AS nextcloud_markdown, c.metadata_uri AS nextcloud_metadata, c.status AS content_status, job.status AS classification_status, classification.decision, classification.topic, classification.event_key, classification.score, classification.reason, classification.quality_flags, classification.created_at_utc AS classified_at_utc, queue.queue_key AS daily_news_queue, queue.status AS queue_status, queue_article.rank AS queue_rank, script.status AS script_status, script.script_uri, voice.status AS voice_status, voice.audio_uri, video.status AS video_status, video.video_uri FROM articles AS a LEFT JOIN article_contents AS c ON c.article_id = a.id LEFT JOIN article_classification_jobs AS job ON job.article_id = a.id LEFT JOIN article_classifications AS classification ON classification.id = job.latest_classification_id LEFT JOIN daily_news_queue_articles AS queue_article ON queue_article.article_id = a.id LEFT JOIN daily_news_queues AS queue ON queue.id = queue_article.queue_id LEFT JOIN daily_news_scripts AS script ON script.queue_id = queue.id LEFT JOIN LATERAL (SELECT * FROM voice_jobs WHERE script_id = script.id ORDER BY id DESC LIMIT 1) AS voice ON true LEFT JOIN LATERAL (SELECT * FROM video_jobs WHERE script_id = script.id ORDER BY id DESC LIMIT 1) AS video ON true ORDER BY COALESCE(a.published_at_utc, a.ingested_at_utc) DESC;",
+        "options": {
+          "queryBatching": "single"
+        }
+      },
+      "id": "ex2",
+      "name": "Leer catálogo editorial",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -280,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "data",
+        "options": {
+          "fileName": "Editorial-Articles-latest.xlsx",
+          "headerRow": true,
+          "sheetName": "Articles"
+        }
+      },
+      "id": "ex3",
+      "name": "Crear XLSX Articles",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -40,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "file",
+        "operation": "upload",
+        "path": "/n8n-youtube-automation/Honi-News/Dexerto-Exports/Editorial-Articles-latest.xlsx",
+        "binaryDataUpload": true,
+        "binaryPropertyName": "data"
+      },
+      "id": "ex4",
+      "name": "Guardar XLSX en Nextcloud",
+      "type": "n8n-nodes-base.nextCloud",
+      "typeVersion": 1,
+      "position": [
+        200,
+        0
+      ],
+      "credentials": {
+        "nextCloudApi": {
+          "id": "EK8g12mTQNuoNYGX",
+          "name": "NextCloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Exportación de auditoría\n\nGenera `Editorial-Articles-latest.xlsx` desde PostgreSQL y lo reemplaza de forma determinista en Nextcloud. No se usa como estado operativo ni como cola.\n\nEl schedule prepara una exportación cada hora cuando el workflow se active. Antes, ejecute una prueba manual y compruebe `/n8n-youtube-automation/Honi-News/Dexerto-Exports`.",
+        "height": 210,
+        "width": 430,
+        "color": 5
+      },
+      "id": "ex5",
+      "name": "Nota: XLSX es una exportación",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -70,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Exportar catálogo manual": {
+      "main": [
+        [
+          {
+            "node": "Leer catálogo editorial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exportar catálogo cada hora": {
+      "main": [
+        [
+          {
+            "node": "Leer catálogo editorial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer catálogo editorial": {
+      "main": [
+        [
+          {
+            "node": "Crear XLSX Articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear XLSX Articles": {
+      "main": [
+        [
+          {
+            "node": "Guardar XLSX en Nextcloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "editorial-export-002",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

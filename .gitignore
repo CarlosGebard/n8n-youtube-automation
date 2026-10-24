@@ -1,12 +1,20 @@
-# Voice reference and model weights must never be committed.
-references/*
-!references/.gitkeep
-checkpoints/
-
-# Local configuration and Python artefacts.
+# Local secrets and Docker overrides
 .env
 .env.*
 !.env.example
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+
+# Generated runtime artifacts and local agent caches
+node_modules/
+out/
+.agents/
+agent/
 __pycache__/
-.pytest_cache/
-*.py[cod]
+
+# Private test/reference media and local data exports
+assets/audio/
+data/
