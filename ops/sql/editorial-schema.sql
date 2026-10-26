@@ -64,7 +64,12 @@ CREATE TABLE IF NOT EXISTS article_contents (
   storage_provider TEXT NOT NULL DEFAULT 'nextcloud'
     CHECK (storage_provider = 'nextcloud'),
   markdown_uri TEXT NOT NULL,
-  metadata_uri TEXT NOT NULL,
+  -- Metadata is embedded in the Markdown artifact. Historical JSON sidecars
+  -- remain referenced here until a separately authorized retention cleanup.
+  metadata_uri TEXT,
+  -- PostgreSQL is the transport between ingestion and classification. Nextcloud
+  -- remains the human-review artifact, not a required runtime dependency.
+  markdown_content TEXT,
   content_fingerprint TEXT NOT NULL,
   content_bytes INTEGER NOT NULL CHECK (content_bytes >= 0),
   status TEXT NOT NULL CHECK (status IN ('pending_upload', 'stored', 'failed')),
@@ -73,6 +78,12 @@ CREATE TABLE IF NOT EXISTS article_contents (
   created_at_utc TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at_utc TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Existing installations created article_contents with a required JSON sidecar.
+-- Keep those historical URIs, while allowing Markdown-only articles going
+-- forward. DROP NOT NULL is idempotent.
+ALTER TABLE article_contents ALTER COLUMN metadata_uri DROP NOT NULL;
+ALTER TABLE article_contents ADD COLUMN IF NOT EXISTS markdown_content TEXT;
 
 CREATE TABLE IF NOT EXISTS article_classification_jobs (
   article_id BIGINT PRIMARY KEY REFERENCES articles(id) ON DELETE CASCADE,
@@ -380,6 +391,55 @@ CREATE TABLE IF NOT EXISTS video_jobs (
   updated_at_utc TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Word-level timing is a separate, retryable stage after a WAV exists.
+CREATE TABLE IF NOT EXISTS audio_alignments (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  voice_job_id BIGINT NOT NULL UNIQUE REFERENCES voice_jobs(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
+  attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+  lock_token TEXT,
+  locked_at_utc TIMESTAMPTZ,
+  provider TEXT NOT NULL DEFAULT 'openai-whisper-1',
+  alignment_uri TEXT,
+  words JSONB,
+  last_error TEXT,
+  completed_at_utc TIMESTAMPTZ,
+  created_at_utc TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at_utc TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE OR REPLACE FUNCTION claim_audio_alignment_job(p_lock_token TEXT, p_voice_job_id BIGINT DEFAULT NULL)
+RETURNS TABLE (voice_job_id BIGINT, audio_uri TEXT, script_text TEXT)
+LANGUAGE plpgsql AS $$
+BEGIN
+  INSERT INTO audio_alignments (voice_job_id)
+  SELECT voice.id FROM voice_jobs voice
+  WHERE voice.status = 'completed' AND voice.audio_uri IS NOT NULL
+    AND (p_voice_job_id IS NULL OR voice.id = p_voice_job_id)
+  ON CONFLICT (voice_job_id) DO NOTHING;
+
+  WITH candidate AS (
+    SELECT alignment.id FROM audio_alignments alignment
+    JOIN voice_jobs voice ON voice.id = alignment.voice_job_id
+    WHERE alignment.status IN ('pending', 'failed') AND alignment.attempts < 3
+      AND (p_voice_job_id IS NULL OR alignment.voice_job_id = p_voice_job_id)
+    ORDER BY alignment.updated_at_utc, alignment.id FOR UPDATE SKIP LOCKED LIMIT 1
+  )
+  UPDATE audio_alignments alignment SET status='processing', attempts=attempts+1,
+    lock_token=p_lock_token, locked_at_utc=now(), last_error=NULL, updated_at_utc=now()
+  FROM candidate WHERE alignment.id=candidate.id;
+
+  RETURN QUERY
+  SELECT voice.id, voice.audio_uri,
+    COALESCE(daily.script_text, individual.script_text)
+  FROM audio_alignments alignment
+  JOIN voice_jobs voice ON voice.id=alignment.voice_job_id
+  LEFT JOIN daily_news_scripts daily ON daily.id=voice.script_id
+  LEFT JOIN individual_scripts individual ON individual.id=voice.individual_script_id
+  WHERE alignment.lock_token=p_lock_token AND alignment.status='processing';
+END; $$;
+
 CREATE TABLE IF NOT EXISTS pipeline_runs (
   run_id TEXT PRIMARY KEY,
   pipeline TEXT NOT NULL,
@@ -534,7 +594,13 @@ AS $$
   SELECT * FROM claimed;
 $$;
 
-CREATE OR REPLACE FUNCTION claim_article_classification_job(
+-- PostgreSQL cannot alter a function's OUT-row shape in place. These two
+-- functions are internal queue claims (not public APIs), so recreate them
+-- before adding the Markdown payload to their result contract.
+DROP FUNCTION IF EXISTS claim_article_classification_job(TEXT);
+DROP FUNCTION IF EXISTS claim_article_classification_jobs(TEXT, INTEGER);
+
+CREATE FUNCTION claim_article_classification_job(
   claim_token TEXT
 )
 RETURNS TABLE (
@@ -544,7 +610,8 @@ RETURNS TABLE (
   source TEXT,
   canonical_url TEXT,
   published_at_utc TIMESTAMPTZ,
-  markdown_uri TEXT
+  markdown_uri TEXT,
+  markdown_content TEXT
 )
 LANGUAGE sql
 AS $$
@@ -554,6 +621,7 @@ AS $$
     JOIN article_contents AS content ON content.article_id = job.article_id
     JOIN articles AS article ON article.id = job.article_id
     WHERE content.status = 'stored'
+      AND content.markdown_content IS NOT NULL
       AND job.status IN ('pending', 'retry')
       AND (article.expires_at_utc IS NULL OR article.expires_at_utc > now())
     ORDER BY article.published_at_utc DESC NULLS LAST, article.id
@@ -571,13 +639,14 @@ AS $$
     RETURNING job.article_id
   )
   SELECT article.id, article.article_id, article.title, article.source,
-         article.canonical_url, article.published_at_utc, content.markdown_uri
+         article.canonical_url, article.published_at_utc, content.markdown_uri,
+         content.markdown_content
   FROM claimed
   JOIN articles AS article ON article.id = claimed.article_id
   JOIN article_contents AS content ON content.article_id = claimed.article_id;
 $$;
 
-CREATE OR REPLACE FUNCTION claim_article_classification_jobs(
+CREATE FUNCTION claim_article_classification_jobs(
   claim_token TEXT,
   claim_limit INTEGER
 )
@@ -588,7 +657,8 @@ RETURNS TABLE (
   source TEXT,
   canonical_url TEXT,
   published_at_utc TIMESTAMPTZ,
-  markdown_uri TEXT
+  markdown_uri TEXT,
+  markdown_content TEXT
 )
 LANGUAGE sql
 AS $$
@@ -598,11 +668,17 @@ AS $$
     JOIN article_contents AS content ON content.article_id = job.article_id
     JOIN articles AS article ON article.id = job.article_id
     WHERE content.status = 'stored'
+      AND content.markdown_content IS NOT NULL
       AND job.status IN ('pending', 'retry')
       AND (article.expires_at_utc IS NULL OR article.expires_at_utc > now())
     ORDER BY article.published_at_utc DESC NULLS LAST, article.id
     FOR UPDATE SKIP LOCKED
-    LIMIT GREATEST(claim_limit, 0)
+    -- A NULL limit explicitly means "claim the complete eligible queue".
+    -- Keep negative limits safe by treating them as zero.
+    LIMIT CASE
+      WHEN claim_limit IS NULL THEN NULL
+      ELSE GREATEST(claim_limit, 0)
+    END
   ), claimed AS (
     UPDATE article_classification_jobs AS job
     SET status = 'processing',
@@ -615,7 +691,8 @@ AS $$
     RETURNING job.article_id
   )
   SELECT article.id, article.article_id, article.title, article.source,
-         article.canonical_url, article.published_at_utc, content.markdown_uri
+         article.canonical_url, article.published_at_utc, content.markdown_uri,
+         content.markdown_content
   FROM claimed
   JOIN articles AS article ON article.id = claimed.article_id
   JOIN article_contents AS content ON content.article_id = claimed.article_id
@@ -659,6 +736,90 @@ AS $$
   JOIN daily_news_queues AS queue ON queue.id = claimed.queue_id;
 $$;
 
+-- A script may never be created from an article older than 72 hours since its
+-- Dexerto publication.  Mark expired work terminally, rather than leaving it
+-- pending for every later run to inspect again.
+ALTER TABLE articles DROP CONSTRAINT IF EXISTS articles_classification_status_check;
+ALTER TABLE articles ADD CONSTRAINT articles_classification_status_check
+  CHECK (classification_status IN ('blocked', 'pending', 'processing', 'classified', 'retry', 'failed', 'expired'));
+
+ALTER TABLE article_classification_jobs DROP CONSTRAINT IF EXISTS article_classification_jobs_status_check;
+ALTER TABLE article_classification_jobs ADD CONSTRAINT article_classification_jobs_status_check
+  CHECK (status IN ('blocked', 'pending', 'processing', 'classified', 'retry', 'failed', 'expired'));
+
+ALTER TABLE individual_script_jobs DROP CONSTRAINT IF EXISTS individual_script_jobs_status_check;
+ALTER TABLE individual_script_jobs ADD CONSTRAINT individual_script_jobs_status_check
+  CHECK (status IN ('pending', 'processing', 'scripted', 'retry', 'failed', 'expired'));
+
+ALTER TABLE daily_news_script_jobs DROP CONSTRAINT IF EXISTS daily_news_script_jobs_status_check;
+ALTER TABLE daily_news_script_jobs ADD CONSTRAINT daily_news_script_jobs_status_check
+  CHECK (status IN ('pending', 'processing', 'scripted', 'retry', 'failed', 'expired'));
+
+ALTER TABLE daily_news_queues DROP CONSTRAINT IF EXISTS daily_news_queues_status_check;
+ALTER TABLE daily_news_queues ADD CONSTRAINT daily_news_queues_status_check
+  CHECK (status IN ('collecting', 'grouped', 'script_pending', 'scripted', 'voice_pending', 'video_pending', 'completed', 'failed', 'expired'));
+
+CREATE OR REPLACE FUNCTION expire_editorial_script_jobs()
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  UPDATE articles AS article
+  SET classification_status = 'expired',
+      updated_at_utc = now()
+  WHERE (
+      article.published_at_utc IS NULL
+      OR COALESCE(article.expires_at_utc, article.published_at_utc + interval '72 hours') <= now()
+    )
+    AND article.classification_status <> 'expired';
+
+  UPDATE article_classification_jobs AS job
+  SET status = 'expired',
+      lock_token = NULL,
+      locked_at_utc = NULL,
+      last_error = 'Expired before script production (72-hour Dexerto limit).',
+      updated_at_utc = now()
+  FROM articles AS article
+  WHERE article.id = job.article_id
+    AND article.classification_status = 'expired'
+    AND job.status IN ('pending', 'retry', 'classified');
+
+  UPDATE individual_script_jobs AS job
+  SET status = 'expired',
+      lock_token = NULL,
+      locked_at_utc = NULL,
+      last_error = 'Expired before script production (72-hour Dexerto limit).',
+      updated_at_utc = now()
+  FROM articles AS article
+  WHERE article.id = job.article_id
+    AND article.classification_status = 'expired'
+    AND job.status IN ('pending', 'retry');
+
+  UPDATE daily_news_queues AS queue
+  SET status = 'expired',
+      updated_at_utc = now()
+  WHERE queue.status IN ('collecting', 'grouped', 'script_pending')
+    AND EXISTS (
+      SELECT 1
+      FROM daily_news_queue_articles AS membership
+      JOIN articles AS article ON article.id = membership.article_id
+      WHERE membership.queue_id = queue.id
+        AND article.classification_status = 'expired'
+    );
+
+  UPDATE daily_news_script_jobs AS job
+  SET status = 'expired',
+      lock_token = NULL,
+      locked_at_utc = NULL,
+      last_error = 'Queue contains an article expired by the 72-hour Dexerto limit.',
+      updated_at_utc = now()
+  FROM daily_news_queues AS queue
+  WHERE queue.id = job.queue_id
+    AND queue.status = 'expired'
+    AND job.status IN ('pending', 'retry');
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION claim_editorial_script_job(
   claim_token TEXT
 )
@@ -666,8 +827,12 @@ RETURNS TABLE (
   job_type TEXT,
   subject_id BIGINT
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 AS $$
+BEGIN
+  PERFORM expire_editorial_script_jobs();
+
+  RETURN QUERY
   WITH daily_candidate AS (
     SELECT 'daily'::TEXT AS job_type, job.queue_id AS subject_id,
            job.created_at_utc
@@ -675,6 +840,16 @@ AS $$
     JOIN daily_news_queues AS queue ON queue.id = job.queue_id
     WHERE job.status IN ('pending', 'retry')
       AND queue.status = 'script_pending'
+      AND NOT EXISTS (
+        SELECT 1
+        FROM daily_news_queue_articles AS membership
+        JOIN articles AS article ON article.id = membership.article_id
+        WHERE membership.queue_id = queue.id
+          AND (
+            article.published_at_utc IS NULL
+            OR COALESCE(article.expires_at_utc, article.published_at_utc + interval '72 hours') <= now()
+          )
+      )
     ORDER BY job.created_at_utc, job.queue_id
     FOR UPDATE OF job SKIP LOCKED
     LIMIT 1
@@ -686,9 +861,12 @@ AS $$
       ON classification_job.article_id = job.article_id
     JOIN article_classifications AS classification
       ON classification.id = job.classification_id
+    JOIN articles AS article ON article.id = job.article_id
     WHERE job.status IN ('pending', 'retry')
       AND classification_job.status = 'classified'
       AND classification.decision = 'Individual'
+      AND article.published_at_utc IS NOT NULL
+      AND COALESCE(article.expires_at_utc, article.published_at_utc + interval '72 hours') > now()
     ORDER BY job.created_at_utc, job.article_id
     FOR UPDATE OF job SKIP LOCKED
     LIMIT 1
@@ -716,4 +894,94 @@ AS $$
   SELECT 'daily'::TEXT, queue_id FROM claimed_daily
   UNION ALL
   SELECT 'individual'::TEXT, article_id FROM claimed_individual;
+END;
+$$;
+
+-- Event-driven callers pass the exact job that they just created.  Manual
+-- workflow 04 runs pass NULLs and retain the queue-draining behavior.
+CREATE OR REPLACE FUNCTION claim_editorial_script_job(
+  claim_token TEXT,
+  requested_job_type TEXT,
+  requested_subject_id BIGINT
+)
+RETURNS TABLE (
+  job_type TEXT,
+  subject_id BIGINT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  PERFORM expire_editorial_script_jobs();
+
+  RETURN QUERY
+  WITH daily_candidate AS (
+    SELECT 'daily'::TEXT AS job_type, job.queue_id AS subject_id,
+           job.created_at_utc
+    FROM daily_news_script_jobs AS job
+    JOIN daily_news_queues AS queue ON queue.id = job.queue_id
+    WHERE job.status IN ('pending', 'retry')
+      AND queue.status = 'script_pending'
+      AND (
+        (requested_job_type IS NULL AND requested_subject_id IS NULL)
+        OR (requested_job_type = 'daily' AND requested_subject_id = job.queue_id)
+      )
+      AND NOT EXISTS (
+        SELECT 1
+        FROM daily_news_queue_articles AS membership
+        JOIN articles AS article ON article.id = membership.article_id
+        WHERE membership.queue_id = queue.id
+          AND (
+            article.published_at_utc IS NULL
+            OR COALESCE(article.expires_at_utc, article.published_at_utc + interval '72 hours') <= now()
+          )
+      )
+    ORDER BY job.created_at_utc, job.queue_id
+    FOR UPDATE OF job SKIP LOCKED
+    LIMIT 1
+  ), individual_candidate AS (
+    SELECT 'individual'::TEXT AS job_type, job.article_id AS subject_id,
+           job.created_at_utc
+    FROM individual_script_jobs AS job
+    JOIN article_classification_jobs AS classification_job
+      ON classification_job.article_id = job.article_id
+    JOIN article_classifications AS classification
+      ON classification.id = job.classification_id
+    JOIN articles AS article ON article.id = job.article_id
+    WHERE job.status IN ('pending', 'retry')
+      AND classification_job.status = 'classified'
+      AND classification.decision = 'Individual'
+      AND article.published_at_utc IS NOT NULL
+      AND COALESCE(article.expires_at_utc, article.published_at_utc + interval '72 hours') > now()
+      AND (
+        (requested_job_type IS NULL AND requested_subject_id IS NULL)
+        OR (requested_job_type = 'individual' AND requested_subject_id = job.article_id)
+      )
+    ORDER BY job.created_at_utc, job.article_id
+    FOR UPDATE OF job SKIP LOCKED
+    LIMIT 1
+  ), candidate AS (
+    SELECT * FROM daily_candidate
+    UNION ALL
+    SELECT * FROM individual_candidate
+    ORDER BY created_at_utc, subject_id
+    LIMIT 1
+  ), claimed_daily AS (
+    UPDATE daily_news_script_jobs AS job
+    SET status = 'processing', lock_token = claim_token, locked_at_utc = now(),
+        attempts = job.attempts + 1, updated_at_utc = now()
+    FROM candidate
+    WHERE candidate.job_type = 'daily' AND job.queue_id = candidate.subject_id
+    RETURNING job.queue_id
+  ), claimed_individual AS (
+    UPDATE individual_script_jobs AS job
+    SET status = 'processing', lock_token = claim_token, locked_at_utc = now(),
+        attempts = job.attempts + 1, updated_at_utc = now()
+    FROM candidate
+    WHERE candidate.job_type = 'individual' AND job.article_id = candidate.subject_id
+    RETURNING job.article_id
+  )
+  SELECT 'daily'::TEXT, queue_id FROM claimed_daily
+  UNION ALL
+  SELECT 'individual'::TEXT, article_id FROM claimed_individual;
+END;
 $$;

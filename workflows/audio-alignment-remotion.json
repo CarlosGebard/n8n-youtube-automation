@@ -1,0 +1,114 @@
+{
+  "id": "jvbfHWK5fplTWeyY",
+  "name": "06 — Audio → timestamps para Remotion",
+  "active": false,
+  "isArchived": false,
+  "versionId": "a392b496-3bf9-4b6e-855e-f2de8d10ec13",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "nodeCount": 3,
+  "createdAt": "2026-10-26T19:48:41.010Z",
+  "updatedAt": "2026-10-26T19:48:41.010Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "parentFolderId": null,
+  "description": "Claims completed WAVs for word-level timestamp alignment and persistence for Remotion.",
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true,
+  "connections": {
+    "Probar alineación manual": {
+      "main": [
+        [
+          {
+            "node": "Reclamar WAV para alineación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "7cf10cfe-96d7-4749-b089-a39a10ae8db4",
+      "name": "Sticky Note bed6f8d5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        48,
+        0
+      ],
+      "parameters": {
+        "content": {
+          "content": "Workflow 06 — WAV aprobado → timestamps por palabra. Configurar la llamada multipart a OpenAI Whisper-1 con la credencial OpenAI account antes de activarlo.",
+          "width": 520,
+          "height": 180
+        }
+      }
+    },
+    {
+      "id": "58b2522a-558b-4a47-9a54-600a93e18154",
+      "name": "Probar alineación manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "4954284d-78b6-41f3-973f-e409d4973736",
+      "name": "Reclamar WAV para alineación",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM claim_audio_alignment_job('{{ $execution.id }}', NULL);",
+        "options": {
+          "queryBatching": "single"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "nodeGroups": [],
+  "activeVersion": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

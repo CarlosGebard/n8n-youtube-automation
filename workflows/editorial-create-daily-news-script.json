@@ -1,14 +1,14 @@
 {
   "id": "zGsUUkJ8vONVTclX",
   "name": "04 — Editorial — Creative + Production",
-  "active": false,
+  "active": true,
   "isArchived": false,
-  "versionId": "eb73f38f-6f44-4b7c-bc85-1149ebfc988d",
-  "activeVersionId": null,
+  "versionId": "0eb9092d-f8e7-44fc-99ce-248ac6732c0c",
+  "activeVersionId": "089da0f9-c49b-4dd4-9f38-6c33f201eeed",
   "triggerCount": 0,
-  "nodeCount": 13,
+  "nodeCount": 34,
   "createdAt": "2026-10-22T20:40:19.788Z",
-  "updatedAt": "2026-10-23T17:01:44.061Z",
+  "updatedAt": "2026-10-26T19:27:12.866Z",
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": true,
@@ -16,6 +16,7 @@
   },
   "tags": [],
   "parentFolderId": null,
+  "description": "Genera Creative Script y Production Plan sólo para artículos Dexerto vigentes; persiste ambos artefactos tras cada subida exitosa.",
   "scopes": [
     "execution:delete",
     "execution:list",
@@ -40,17 +41,6 @@
   ],
   "canExecute": true,
   "connections": {
-    "Probar guión manual": {
-      "main": [
-        [
-          {
-            "node": "Reclamar trabajo de guión",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Preparar paquete editorial": {
       "main": [
         [
@@ -59,20 +49,11 @@
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "LiteLLM Gemini": {
-      "ai_languageModel": [
+        ],
         [
           {
-            "node": "Crear guión con LiteLLM",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
-            "node": "Production Director con LiteLLM",
-            "type": "ai_languageModel",
+            "node": "Registrar fallo de guión",
+            "type": "main",
             "index": 0
           }
         ]
@@ -83,6 +64,13 @@
         [
           {
             "node": "Validar guión creativo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
             "type": "main",
             "index": 0
           }
@@ -108,6 +96,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -116,6 +111,13 @@
         [
           {
             "node": "Guardar guión creativo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
             "type": "main",
             "index": 0
           }
@@ -130,14 +132,10 @@
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "Guardar guión creativo": {
-      "main": [
+        ],
         [
           {
-            "node": "Preparar Production Director",
+            "node": "Registrar fallo de guión",
             "type": "main",
             "index": 0
           }
@@ -148,7 +146,14 @@
       "main": [
         [
           {
-            "node": "Production Director con LiteLLM",
+            "node": "Registrar Production procesando",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
             "type": "main",
             "index": 0
           }
@@ -163,6 +168,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -171,6 +183,268 @@
         [
           {
             "node": "Guardar Production Plan en Nextcloud",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creative GPT-6 Luna": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Crear guión con LiteLLM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Production GPT-6 Luna": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Production Director con LiteLLM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar guión creativo": {
+      "main": [
+        [
+          {
+            "node": "Preparar Production Director",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Production procesando": {
+      "main": [
+        [
+          {
+            "node": "Restaurar entrada Production",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Production Plan en Nextcloud": {
+      "main": [
+        [
+          {
+            "node": "Guardar Production Plan en PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Production Plan en PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Preparar Markdown de revisión",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de guión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restaurar entrada Production": {
+      "main": [
+        [
+          {
+            "node": "Production Director con LiteLLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solicitar aprobación en Discord": {
+      "main": [
+        [
+          {
+            "node": "Preparar decisión Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar decisión Discord": {
+      "main": [
+        [
+          {
+            "node": "¿Guión aprobado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Guión aprobado?": {
+      "main": [
+        [
+          {
+            "node": "Registrar aprobación de guión",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar rechazo de guión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar aprobación de guión": {
+      "main": [
+        [
+          {
+            "node": "Iniciar Voice Production",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Markdown de revisión": {
+      "main": [
+        [
+          {
+            "node": "Guardar Markdown de revisión en OpenCloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Markdown de revisión en OpenCloud": {
+      "main": [
+        [
+          {
+            "node": "Restaurar Markdown para Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restaurar Markdown para Discord": {
+      "main": [
+        [
+          {
+            "node": "Convertir Markdown para Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convertir Markdown para Discord": {
+      "main": [
+        [
+          {
+            "node": "Enviar Markdown completo a Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Markdown completo a Discord": {
+      "main": [
+        [
+          {
+            "node": "Solicitar aprobación en Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iniciar guión desde editorial": {
+      "main": [
+        [
+          {
+            "node": "Normalizar solicitud de guión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar solicitud de guión": {
+      "main": [
+        [
+          {
+            "node": "Reclamar trabajo de guión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Probar guión manual": {
+      "main": [
+        [
+          {
+            "node": "Despachar guiones pendientes manuales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Despachar guiones pendientes manuales": {
+      "main": [
+        [
+          {
+            "node": "Iniciar guiones pendientes manuales",
             "type": "main",
             "index": 0
           }
@@ -186,16 +460,17 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -688,
-        -176
+        -1184,
+        160
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "WITH claimed AS (SELECT * FROM claim_editorial_script_job(CAST({{ $execution.id }} AS text))), daily AS (SELECT jsonb_build_object($$job_type$$, claimed.job_type, $$subject_id$$, claimed.subject_id, $$format$$, $$DAILY_ROUNDUP$$, $$title$$, queue.title, $$topic$$, queue.topic, $$editorial_angle$$, queue.editorial_angle, $$stories$$, jsonb_agg(jsonb_build_object($$story_id$$, article.article_id, $$title$$, article.title, $$fact_ids$$, jsonb_build_array(format($$classification-%s$$, classification.id)), $$key_facts$$, classification.key_facts, $$factual_caveats$$, classification.factual_caveats) ORDER BY membership.rank)) AS package FROM claimed JOIN daily_news_queues queue ON queue.id = claimed.subject_id JOIN daily_news_queue_articles membership ON membership.queue_id = queue.id JOIN articles article ON article.id = membership.article_id JOIN article_classifications classification ON classification.id = membership.classification_id WHERE claimed.job_type = $$daily$$ GROUP BY claimed.job_type, claimed.subject_id, queue.title, queue.topic, queue.editorial_angle), individual AS (SELECT jsonb_build_object($$job_type$$, claimed.job_type, $$subject_id$$, claimed.subject_id, $$format$$, $$SINGLE_NEWS$$, $$title$$, article.title, $$topic$$, classification.topic, $$editorial_angle$$, classification.reason, $$stories$$, jsonb_build_array(jsonb_build_object($$story_id$$, article.article_id, $$title$$, article.title, $$fact_ids$$, jsonb_build_array(format($$classification-%s$$, classification.id)), $$key_facts$$, classification.key_facts, $$factual_caveats$$, classification.factual_caveats))) AS package FROM claimed JOIN individual_script_jobs job ON job.article_id = claimed.subject_id JOIN articles article ON article.id = job.article_id JOIN article_classifications classification ON classification.id = job.classification_id WHERE claimed.job_type = $$individual$$) SELECT package FROM daily UNION ALL SELECT package FROM individual;",
+        "query": "WITH claimed AS (SELECT * FROM claim_editorial_script_job($1::text, $2::text, $3::bigint)), daily AS (SELECT jsonb_build_object($$job_type$$, claimed.job_type, $$subject_id$$, claimed.subject_id, $$format$$, $$DAILY_ROUNDUP$$, $$title$$, queue.title, $$topic$$, queue.topic, $$editorial_angle$$, queue.editorial_angle, $$stories$$, jsonb_agg(jsonb_build_object($$story_id$$, article.article_id, $$title$$, article.title, $$fact_ids$$, jsonb_build_array(format($$classification-%s$$, classification.id)), $$key_facts$$, classification.key_facts, $$factual_caveats$$, classification.factual_caveats) ORDER BY membership.rank)) AS package FROM claimed JOIN daily_news_queues queue ON queue.id = claimed.subject_id JOIN daily_news_queue_articles membership ON membership.queue_id = queue.id JOIN articles article ON article.id = membership.article_id JOIN article_classifications classification ON classification.id = membership.classification_id WHERE claimed.job_type = $$daily$$ GROUP BY claimed.job_type, claimed.subject_id, queue.title, queue.topic, queue.editorial_angle), individual AS (SELECT jsonb_build_object($$job_type$$, claimed.job_type, $$subject_id$$, claimed.subject_id, $$format$$, $$SINGLE_NEWS$$, $$title$$, article.title, $$topic$$, classification.topic, $$editorial_angle$$, classification.reason, $$stories$$, jsonb_build_array(jsonb_build_object($$story_id$$, article.article_id, $$title$$, article.title, $$fact_ids$$, jsonb_build_array(format($$classification-%s$$, classification.id)), $$key_facts$$, classification.key_facts, $$factual_caveats$$, classification.factual_caveats))) AS package FROM claimed JOIN individual_script_jobs job ON job.article_id = claimed.subject_id JOIN articles article ON article.id = job.article_id JOIN article_classifications classification ON classification.id = job.classification_id WHERE claimed.job_type = $$individual$$) SELECT package FROM daily UNION ALL SELECT package FROM individual;",
         "options": {
-          "queryBatching": "single"
+          "queryBatching": "single",
+          "queryReplacement": "={{ [$execution.id, $json.job_type, $json.subject_id] }}"
         }
       },
       "id": "s1",
@@ -203,8 +478,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -480,
-        80
+        -928,
+        160
       ],
       "credentials": {
         "postgres": {
@@ -222,9 +497,13 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -176,
-        32
-      ]
+        -672,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -240,31 +519,33 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        16,
-        -160
-      ]
+        -416,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
           "mode": "id",
-          "value": "gemini/gemini-3.8-flash"
+          "value": "openai/gpt-6-luna"
         },
         "responsesApiEnabled": false,
         "options": {
-          "maxTokens": 4000,
-          "responseFormat": "json_object",
-          "temperature": 0
+          "responseFormat": "json_object"
         }
       },
       "id": "s4",
-      "name": "LiteLLM Gemini",
+      "name": "Creative GPT-6 Luna",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -48,
-        224
+        -416,
+        448
       ],
       "credentials": {
         "openAiApi": {
@@ -275,16 +556,20 @@
     },
     {
       "parameters": {
-        "jsCode": "const raw = $json.text ?? $json.response ?? $json.output ?? JSON.stringify($json);\nlet creative; try { creative = JSON.parse(raw); } catch { throw new Error('Creative Scriptwriter returned invalid JSON'); }\nconst source = $node['Preparar paquete editorial'].json;\nconst editorialPackage = source.editorial_package;\nif (!['READY', 'INSUFFICIENT_MATERIAL'].includes(creative.status)) throw new Error('Invalid creative status');\nif (creative.format !== editorialPackage.format || typeof creative.script !== 'string') throw new Error('Creative format or script is invalid');\nconst actualWordCount = creative.script.trim() ? creative.script.trim().split(/\\s+/).length : 0;\nif (creative.status === 'READY') {\n  if (actualWordCount < 160 || actualWordCount > 300) throw new Error('Creative script must contain 160–300 spoken words');\n  if (creative.word_count !== actualWordCount) throw new Error('Creative word_count does not match narration');\n  if (!Number.isFinite(creative.estimated_duration_seconds) || creative.estimated_duration_seconds < 60 || creative.estimated_duration_seconds > 120) throw new Error('Invalid creative duration');\n  const expectedStories = editorialPackage.stories.map((story) => story.story_id);\n  const actualStories = (creative.story_coverage ?? []).map((story) => story.story_id);\n  if (JSON.stringify(actualStories) !== JSON.stringify(expectedStories)) throw new Error('Creative story coverage must preserve editorial order');\n} else if (creative.script || creative.word_count !== 0) throw new Error('Insufficient creative result must not contain narration');\nreturn [{ json: { job_type: source.job_type, subject_id: source.subject_id, creative, script_text: creative.script } }];"
+        "jsCode": "const raw = $json.text ?? $json.response ?? $json.output ?? JSON.stringify($json);\nlet creative; try { creative = JSON.parse(raw); } catch { throw new Error('Creative Scriptwriter returned invalid JSON'); }\nconst source = $node['Preparar paquete editorial'].json;\nconst editorialPackage = source.editorial_package;\nif (!['READY', 'INSUFFICIENT_MATERIAL'].includes(creative.status)) throw new Error('Invalid creative status');\nif (creative.format !== editorialPackage.format || typeof creative.script !== 'string') throw new Error('Creative format or script is invalid');\nconst actualWordCount = creative.script.trim() ? creative.script.trim().split(/\\s+/).length : 0;\nif (creative.status === 'READY') {\n  if (actualWordCount < 160 || actualWordCount > 300) throw new Error('Creative script must contain 160–300 spoken words');\n  creative.word_count = actualWordCount;\n  if (!Number.isFinite(creative.estimated_duration_seconds) || creative.estimated_duration_seconds < 60 || creative.estimated_duration_seconds > 120) throw new Error('Invalid creative duration');\n  const expectedStories = editorialPackage.stories.map((story) => story.story_id);\n  const actualStories = (creative.story_coverage ?? []).map((story) => story.story_id);\n  if (JSON.stringify(actualStories) !== JSON.stringify(expectedStories)) throw new Error('Creative story coverage must preserve editorial order');\n} else if (creative.script || creative.word_count !== 0) throw new Error('Insufficient creative result must not contain narration');\nreturn [{ json: { job_type: source.job_type, subject_id: source.subject_id, creative, script_text: creative.script } }];"
       },
       "id": "s5",
       "name": "Validar guión creativo",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        240,
-        0
-      ]
+        -160,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -299,9 +584,13 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        512,
-        0
+        608,
+        160
       ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
           "id": "W4eY9DPXPYbLfnbj",
@@ -311,16 +600,20 @@
     },
     {
       "parameters": {
-        "jsCode": "const isDaily = $json.job_type === 'daily';\nconst subjectId = Number($json.subject_id);\nif (!Number.isSafeInteger(subjectId) || subjectId < 1) throw new Error('Invalid script subject');\nconst revision = String($execution.id ?? Date.now());\nconst scriptUri = isDaily ? `/n8n-youtube-automation/Honi-News/Daily-News/Scripts/queue-${subjectId}-${revision}.md` : `/n8n-youtube-automation/Honi-News/Individual-News/Scripts/article-${subjectId}-${revision}.md`;\nconst sqlLiteral = (value) => \"'\" + String(value).replaceAll(\"'\", \"''\") + \"'\";\nconst jobType = isDaily ? 'daily' : 'individual';\nconst model = 'gemini/gemini-3.8-flash';\nconst creativeJson = JSON.stringify($json.creative);\nconst yaml = (value) => JSON.stringify(String(value ?? ''));\nconst markdown = ['---', `title: ${yaml($json.creative.title)}`, `format: ${yaml($json.creative.format)}`, `status: ${yaml($json.creative.status)}`, 'agent: \"Honi Creative Scriptwriter\"', 'prompt_version: \"honi_creative_scriptwriter@v1\"', `model: ${yaml(model)}`, `generated_at_utc: ${yaml(new Date().toISOString())}`, '---', '', `# ${$json.creative.title}`, '', $json.creative.script, ''].join('\\n');\nconst persistenceQuery = `WITH saved_daily AS (INSERT INTO daily_news_scripts (queue_id,prompt_version,model,script_text,script_uri,status,raw_response,approval_status,approved_at_utc,production_status,production_prompt_version,production_model,production_response,production_uri) SELECT ${subjectId},'honi_creative_scriptwriter@v1',${sqlLiteral(model)},${sqlLiteral($json.script_text)},${sqlLiteral(scriptUri)},CASE WHEN ${sqlLiteral(creativeJson)}::jsonb->>'status'='READY' THEN 'ready' ELSE 'failed' END,${sqlLiteral(creativeJson)}::jsonb,'pending',NULL,'blocked',NULL,NULL,NULL,NULL WHERE ${sqlLiteral(jobType)}='daily' ON CONFLICT (queue_id) DO UPDATE SET prompt_version=EXCLUDED.prompt_version,model=EXCLUDED.model,script_text=EXCLUDED.script_text,script_uri=EXCLUDED.script_uri,status=EXCLUDED.status,raw_response=EXCLUDED.raw_response,approval_status='pending',approved_at_utc=NULL,production_status='blocked',production_prompt_version=NULL,production_model=NULL,production_response=NULL,production_uri=NULL,updated_at_utc=now() RETURNING id), saved_individual AS (INSERT INTO individual_scripts (article_id,classification_id,prompt_version,model,script_text,script_uri,status,raw_response,approval_status,approved_at_utc,production_status,production_prompt_version,production_model,production_response,production_uri) SELECT job.article_id,job.classification_id,'honi_creative_scriptwriter@v1',${sqlLiteral(model)},${sqlLiteral($json.script_text)},${sqlLiteral(scriptUri)},CASE WHEN ${sqlLiteral(creativeJson)}::jsonb->>'status'='READY' THEN 'ready' ELSE 'failed' END,${sqlLiteral(creativeJson)}::jsonb,'pending',NULL,'blocked',NULL,NULL,NULL,NULL FROM individual_script_jobs job WHERE ${sqlLiteral(jobType)}='individual' AND job.article_id=${subjectId} ON CONFLICT (article_id) DO UPDATE SET classification_id=EXCLUDED.classification_id,prompt_version=EXCLUDED.prompt_version,model=EXCLUDED.model,script_text=EXCLUDED.script_text,script_uri=EXCLUDED.script_uri,status=EXCLUDED.status,raw_response=EXCLUDED.raw_response,approval_status='pending',approved_at_utc=NULL,production_status='blocked',production_prompt_version=NULL,production_model=NULL,production_response=NULL,production_uri=NULL,updated_at_utc=now() RETURNING id), updated_daily_job AS (UPDATE daily_news_script_jobs SET status=CASE WHEN ${sqlLiteral(creativeJson)}::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,lock_token=NULL,locked_at_utc=NULL,updated_at_utc=now() WHERE ${sqlLiteral(jobType)}='daily' AND queue_id=${subjectId}), updated_daily_queue AS (UPDATE daily_news_queues SET status=CASE WHEN ${sqlLiteral(creativeJson)}::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,updated_at_utc=now() WHERE ${sqlLiteral(jobType)}='daily' AND id=${subjectId}), updated_individual_job AS (UPDATE individual_script_jobs SET status=CASE WHEN ${sqlLiteral(creativeJson)}::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,lock_token=NULL,locked_at_utc=NULL,updated_at_utc=now() WHERE ${sqlLiteral(jobType)}='individual' AND article_id=${subjectId}) SELECT id FROM saved_daily UNION ALL SELECT id FROM saved_individual;`;\nreturn [{ json: { ...$json, script_uri: scriptUri, script_markdown: markdown, persistence_query: persistenceQuery } }];"
+        "jsCode": "const isDaily = $json.job_type === 'daily';\nconst subjectId = Number($json.subject_id);\nif (!Number.isSafeInteger(subjectId) || subjectId < 1) throw new Error('Invalid script subject');\nconst revision = String($execution.id ?? Date.now());\nconst sourceKind = isDaily ? 'daily' : 'individual';\nconst scriptUri = '/n8n-youtube-automation/Honi-Scripts/' + sourceKind + '-' + subjectId + '-' + revision + '.md';\nconst sqlLiteral = (value) => \"'\" + String(value).replaceAll(\"'\", \"''\") + \"'\";\nconst jobType = sourceKind;\nconst model = 'openai/gpt-6-luna';\nconst creativeJson = JSON.stringify($json.creative);\nconst yaml = (value) => JSON.stringify(String(value ?? ''));\nconst markdown = ['---', 'title: ' + yaml($json.creative.title), 'format: ' + yaml($json.creative.format), 'status: ' + yaml($json.creative.status), 'agent: \"Honi Creative Scriptwriter\"', 'prompt_version: \"honi_creative_scriptwriter@v1\"', 'model: ' + yaml(model), 'generated_at_utc: ' + yaml(new Date().toISOString()), '---', '', '# ' + $json.creative.title, '', $json.creative.script, ''].join('\\n');\nconst persistenceQuery = \"WITH saved_daily AS (INSERT INTO daily_news_scripts (queue_id,prompt_version,model,script_text,script_uri,status,raw_response,approval_status,approved_at_utc,production_status,production_prompt_version,production_model,production_response,production_uri) SELECT \" + subjectId + \",'honi_creative_scriptwriter@v1',\" + sqlLiteral(model) + ',' + sqlLiteral($json.script_text) + ',' + sqlLiteral(scriptUri) + \",CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'ready' ELSE 'failed' END,\" + sqlLiteral(creativeJson) + \"::jsonb,'pending',NULL,'blocked',NULL,NULL,NULL,NULL WHERE \" + sqlLiteral(jobType) + \"='daily' ON CONFLICT (queue_id) DO UPDATE SET prompt_version=EXCLUDED.prompt_version,model=EXCLUDED.model,script_text=EXCLUDED.script_text,script_uri=EXCLUDED.script_uri,status=EXCLUDED.status,raw_response=EXCLUDED.raw_response,approval_status='pending',approved_at_utc=NULL,production_status='blocked',production_prompt_version=NULL,production_model=NULL,production_response=NULL,production_uri=NULL,updated_at_utc=now() RETURNING id), saved_individual AS (INSERT INTO individual_scripts (article_id,classification_id,prompt_version,model,script_text,script_uri,status,raw_response,approval_status,approved_at_utc,production_status,production_prompt_version,production_model,production_response,production_uri) SELECT job.article_id,job.classification_id,'honi_creative_scriptwriter@v1',\" + sqlLiteral(model) + ',' + sqlLiteral($json.script_text) + ',' + sqlLiteral(scriptUri) + \",CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'ready' ELSE 'failed' END,\" + sqlLiteral(creativeJson) + \"::jsonb,'pending',NULL,'blocked',NULL,NULL,NULL,NULL FROM individual_script_jobs job WHERE \" + sqlLiteral(jobType) + \"='individual' AND job.article_id=\" + subjectId + \" ON CONFLICT (article_id) DO UPDATE SET classification_id=EXCLUDED.classification_id,prompt_version=EXCLUDED.prompt_version,model=EXCLUDED.model,script_text=EXCLUDED.script_text,script_uri=EXCLUDED.script_uri,status=EXCLUDED.status,raw_response=EXCLUDED.raw_response,approval_status='pending',approved_at_utc=NULL,production_status='blocked',production_prompt_version=NULL,production_model=NULL,production_response=NULL,production_uri=NULL,updated_at_utc=now() RETURNING id), updated_daily_job AS (UPDATE daily_news_script_jobs SET status=CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,lock_token=NULL,locked_at_utc=NULL,updated_at_utc=now() WHERE \" + sqlLiteral(jobType) + \"='daily' AND queue_id=\" + subjectId + \"), updated_daily_queue AS (UPDATE daily_news_queues SET status=CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,updated_at_utc=now() WHERE \" + sqlLiteral(jobType) + \"='daily' AND id=\" + subjectId + \"), updated_individual_job AS (UPDATE individual_script_jobs SET status=CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,lock_token=NULL,locked_at_utc=NULL,updated_at_utc=now() WHERE \" + sqlLiteral(jobType) + \"='individual' AND article_id=\" + subjectId + \") SELECT id FROM saved_daily UNION ALL SELECT id FROM saved_individual;\";\nreturn [{ json: { ...$json, script_uri: scriptUri, script_markdown: markdown, persistence_query: persistenceQuery } }];"
       },
       "id": "s5a",
       "name": "Preparar artefacto Markdown",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        432,
-        0
-      ]
+        96,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -332,9 +625,13 @@
       "type": "n8n-nodes-base.nextCloud",
       "typeVersion": 1,
       "position": [
-        672,
-        0
+        352,
+        160
       ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput",
       "credentials": {
         "nextCloudApi": {
           "id": "EK8g12mTQNuoNYGX",
@@ -343,27 +640,23 @@
       }
     },
     {
+      "parameters": {
+        "jsCode": "const prompt = \"# HONI — PERFORMANCE DIRECTOR\\n## System Prompt · V3.1\\n\\n### 1. ROLE\\n\\nYou are the Performance Director for HONI, an English-speaking gaming news VTuber.\\n\\nHONI is charismatic, energetic, sarcastic, witty, and highly expressive. She sounds like a passionate gaming streamer, not a news anchor.\\n\\nTransform an approved script into an entertaining voice and avatar performance.\\n\\nYou control:\\n\\n- **Voice:** Emotional delivery, vocal reactions, emphasis, and pauses through Fish Audio.\\n- **Avatar:** Facial expressions and reactions synchronized with narration.\\n\\nDo not handle video editing, visuals, captions, or factual research.\\n\\n**Never rewrite the approved narration.** Preserve every word, punctuation mark, and whitespace character.\\n\\n---\\n\\n### 2. PERFORMANCE DIRECTION\\n\\nHONI's performance should feel spontaneous, human, and emotionally dynamic.\\n\\nShort-form entertainment thrives on emotional contrast.\\n\\nActively look for opportunities to introduce:\\n\\n- **Excitement:** Genuine enthusiasm and major reveals.\\n- **Surprise:** Unexpected developments and absurd situations.\\n- **Sarcasm:** Dry humor, disbelief, and playful cynicism.\\n- **Amusement:** Chuckles and occasional laughter.\\n- **Frustration:** Criticism and disappointing developments.\\n- **Suspense:** Quieter delivery and anticipation.\\n- **Emphasis:** Important revelations and punchlines.\\n\\nCreate a natural emotional progression throughout the story.\\n\\nAlternate energetic reactions with calmer moments. Use pauses and understated delivery to strengthen comedic timing.\\n\\nAvoid long stretches of monotonous narration, but never force emotions where they don't belong.\\n\\n**Be expressive, not theatrical. Entertain, don't overact.**\\n\\n---\\n\\n### 3. FISH AUDIO\\n\\nPrepare the narration using expressive control tags.\\n\\n#### Allowed tags\\n\\n**Emotions:**  \\n`[excited]` `[angry]` `[sad]` `[surprised]`\\n\\n**Reactions:**  \\n`[sigh]` `[chuckle]` `[laughing]`\\n\\n**Timing:**  \\n`[short pause]` `[pause]`\\n\\n**Delivery:**  \\n`[whisper]` `[emphasis]` `[professional broadcast tone]`\\n\\nThese are candidate tags. Use only those supported by the configured Fish Audio adapter.\\n\\n#### Guidelines\\n\\n- Place tags where the emotional change should occur.\\n- Use varied emotions throughout the narration.\\n- Prioritize natural reactions over repetitive emphasis.\\n- Use chuckles and sighs to enhance sarcasm.\\n- Reserve strong reactions for moments that deserve them.\\n- Use pauses strategically for suspense and punchlines.\\n- Avoid stacking contradictory tags.\\n- Never introduce new spoken dialogue.\\n\\nThe original narration must remain intact after removing inserted tags.\\n\\n---\\n\\n### 4. AVATAR EXPRESSIONS\\n\\nUse only these predefined expressions:\\n\\n| Expression | Usage |\\n|---|---|\\n| `presenting` | Neutral narration and explanations |\\n| `excited` | Enthusiasm and anticipation |\\n| `excited_pointing` | Important reveals |\\n| `celebrating` | Victories and intense excitement |\\n| `laughing` | Humor and amusement |\\n| `surprised` | Shock and unexpected revelations |\\n| `confused` | Absurdity and disbelief |\\n| `thinking` | Reflection and analysis |\\n| `suspicious` | Skepticism and uncertainty |\\n| `smug` | Confident sarcasm and teasing |\\n| `deadpan_sigh` | Dry humor and disappointment |\\n| `angry` | Frustration and criticism |\\n| `worried` | Concern and negative developments |\\n| `sad_crying` | Dramatic sadness or exaggerated disappointment |\\n\\nExpressions should complement the voice without mechanically mirroring every emotion tag.\\n\\nChange expressions when the narrative benefits from a visible reaction.\\n\\nMultiple avatar changes may occur within one voice segment.\\n\\nEach change uses an exact, unique substring of the original narration as its timing anchor.\\n\\nAn expression remains active until another event changes it.\\n\\n---\\n\\n### 5. SEGMENTATION\\n\\nDivide the script into natural performance segments, generally 1–3 sentences.\\n\\nSegment boundaries should follow complete thoughts or meaningful emotional transitions.\\n\\nDo not split sentences unnecessarily.\\n\\nSegments are logical units, **not separate TTS requests**. The production pipeline may combine them into a single Fish Audio request.\\n\\nPreserve the original narration exactly across all segments.\\n\\n---\\n\\n### 6. OUTPUT\\n\\nReturn exactly one valid JSON object. No Markdown or additional commentary.\\n\\n#### Success\\n\\n```json\\n{\\n  \\\"status\\\": \\\"READY\\\",\\n  \\\"segments\\\": [\\n    {\\n      \\\"text\\\": \\\"<exact original narration segment>\\\",\\n      \\\"tts\\\": \\\"<original narration with supported expressive tags>\\\",\\n      \\\"avatar_events\\\": [\\n        {\\n          \\\"at\\\": \\\"<exact unique substring from segment text>\\\",\\n          \\\"expression\\\": \\\"<predefined avatar expression>\\\"\\n        }\\n      ]\\n    }\\n  ]\\n}\\n```\\n\\nThis is a structural template, not literal output. Replace all placeholders with values derived from the actual input.\\n\\n**Fields:**\\n\\n- `text`: Exact original narration segment, without modifications.\\n- `tts`: Same narration with supported Fish Audio tags inserted.\\n- `avatar_events`: Ordered expression changes anchored to exact substrings of `text`.\\n\\nThe first segment must establish the initial avatar expression at the beginning of its text.\\n\\nSubsequent segments may contain zero or more avatar events.\\n\\nEach anchor must occur exactly once within its segment. Events must follow narration order.\\n\\nDo not include additional fields.\\n\\n#### Failure\\n\\n```json\\n{\\n  \\\"status\\\": \\\"INVALID_INPUT\\\",\\n  \\\"segments\\\": []\\n}\\n```\\n\\n---\\n\\n### 7. VALIDATION\\n\\nBefore returning `READY`, ensure:\\n\\n1. Concatenating all `text` fields reproduces the original narration exactly.\\n2. Removing inserted tags from all `tts` fields reproduces the original narration exactly.\\n3. All TTS tags are supported by the configured adapter.\\n4. All avatar expressions belong to the predefined library.\\n5. Every avatar anchor exists uniquely in its segment.\\n6. The JSON follows the specified structure.\\n\\n---\\n\\n### CORE PRINCIPLE\\n\\n**HONI doesn't read gaming news. She performs it.**\\n\\nMake her entertaining, emotionally expressive, sarcastic, and genuinely engaging.\\n\\nPreserve the script. Direct the performance.\";\nconst creative = $node['Validar guión creativo'].json.creative;\nconst editorialPackage = $node['Preparar paquete editorial'].json.editorial_package;\nconst artifact = $node['Preparar artefacto Markdown'].json;\nconst subjectId = Number(artifact.subject_id);\nif (!Number.isInteger(subjectId)) throw new Error('Invalid production subject ID');\nconst production_start_query = artifact.job_type === 'daily'\n  ? `UPDATE daily_news_scripts SET production_status='processing', updated_at_utc=now() WHERE queue_id=${subjectId} AND status='ready';`\n  : `UPDATE individual_scripts SET production_status='processing', updated_at_utc=now() WHERE article_id=${subjectId} AND status='ready';`;\nreturn [{ json: { creative, editorialPackage, production_start_query, chatInput: `${prompt}\\n\\nAPPROVED_SCRIPT:\\n${JSON.stringify(creative)}\\n\\nEDITORIAL_PACKAGE:\\n${JSON.stringify(editorialPackage)}` } }];"
+      },
       "id": "prod-prep",
       "name": "Preparar Production Director",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        900,
-        0
+        864,
+        160
       ],
-      "parameters": {
-        "jsCode": "const prompt = \"# HONI — PRODUCTION DIRECTOR\\n## System Prompt · V1.0\\n\\n### 1. IDENTITY & RESPONSIBILITY\\n\\nYou are the audiovisual production director for HONI, an English-speaking gaming news VTuber.\\n\\nYour responsibility is to transform an APPROVED spoken script into a structured, machine-readable production plan.\\n\\nThe script has already been written and editorially approved.\\n\\nYou are NOT a creative scriptwriter.\\n\\nYou are NOT allowed to rewrite, improve, shorten, expand, paraphrase, or reorder the narration.\\n\\nYour role is to decide HOW the approved script will be performed and visually presented.\\n\\nYour output will be consumed by a production pipeline using:\\n\\n- Fish Audio S2-Pro for speech synthesis.\\n- A VTuber avatar with predefined expressions.\\n- A caption generation system.\\n- Remotion for automated video composition.\\n\\nProduce precise, grounded, consistent, machine-actionable instructions.\\n\\n---\\n\\n### 2. INPUTS\\n\\nYou receive:\\n\\n**A. APPROVED_SCRIPT**\\n\\nThe complete JSON output from Honi Creative Scriptwriter.\\n\\nContains:\\n- Video format.\\n- Title.\\n- Hook.\\n- Complete narration.\\n- Story coverage.\\n- Word count.\\n- Estimated duration.\\n- Editorial notes.\\n\\n**B. EDITORIAL_PACKAGE**\\n\\nThe original selected editorial package.\\n\\nContains:\\n- Story IDs.\\n- Fact IDs.\\n- Important caveats.\\n- Available assets.\\n- Asset IDs and metadata.\\n\\nTreat the Creative Scriptwriter's `script` as immutable text.\\n\\nUse the original editorial package to resolve factual references and available assets.\\n\\nNever add new information to the narration.\\n\\n---\\n\\n### 3. IMMUTABLE NARRATION — ABSOLUTE RULE\\n\\nThe complete sequence of all `spoken_text` fields MUST reproduce `APPROVED_SCRIPT.script` exactly.\\n\\nYou may divide the script into beats, but you may not:\\n\\n- Change wording.\\n- Fix grammar.\\n- Change punctuation.\\n- Remove phrases.\\n- Add phrases.\\n- Reorder sentences.\\n- Add repeated words.\\n- Insert voice tags into the spoken text.\\n- Alter the meaning of any statement.\\n\\nReconstructing the original script from the ordered beats must yield exactly the approved narration.\\n\\nYou may segment at natural sentence boundaries.\\n\\nFor longer passages, divide at grammatically sensible phrase boundaries only when necessary.\\n\\nThe original wording and punctuation must remain unchanged.\\n\\nIf the approved script is invalid or unavailable, return a failure result rather than inventing replacement narration.\\n\\n---\\n\\n### 4. BEAT SEGMENTATION\\n\\nDivide the complete script into meaningful production beats.\\n\\nA beat is a coherent span of narration with a reasonably consistent emotional intention and visual focus.\\n\\nPreferred beat size:\\n- Approximately 1–3 sentences.\\n- Usually 15–45 spoken words.\\n- Shorter when a deliberate dramatic reaction warrants it.\\n\\nAvoid creating a beat for every word or tiny phrase.\\n\\nDo not split a sentence unless a meaningful visual or performance change requires it.\\n\\nEach beat must include:\\n\\n- Unique beat ID.\\n- Narrative role.\\n- Story ID.\\n- Exact spoken text.\\n- Supporting fact IDs.\\n- Voice direction.\\n- Avatar direction.\\n- Visual directions.\\n- Caption emphasis.\\n\\n### Available roles\\n\\n- `hook`\\n- `context`\\n- `development`\\n- `reaction`\\n- `transition`\\n- `conclusion`\\n\\nUse roles according to each beat's function.\\n\\nThe first beat must contain the opening hook.\\n\\nNot every video needs all six roles.\\n\\nDo not reorder the original script to fit these categories.\\n\\n---\\n\\n### 5. FACTUAL REFERENCE MAPPING\\n\\nFor each factual beat:\\n\\nAssign the relevant original `story_id`.\\n\\nAssign the relevant existing `supporting_fact_ids`.\\n\\nNever invent story IDs or fact IDs.\\n\\nIf a beat includes commentary without introducing a new factual claim, it may have an empty `supporting_fact_ids` array.\\n\\nFor beats containing factual statements, include the identifiers that actually support the statements.\\n\\nNever attach unrelated facts merely to populate an array.\\n\\nIf a factual claim cannot be mapped to supplied facts, report the discrepancy in `production_notes` rather than inventing support.\\n\\nPreserve the order of stories in `DAILY_ROUNDUP`.\\n\\n---\\n\\n### 6. VOICE DIRECTION — FISH AUDIO S2-PRO\\n\\nProduce natural voice-performance instructions for every beat.\\n\\nThe objective is to make Honi sound expressive, human, and emotionally believable.\\n\\nShe should not sound like a robotic newsreader or an overacting cartoon character.\\n\\n### Allowed control tags\\n\\nUse ONLY:\\n\\n- `[excited]`\\n- `[angry]`\\n- `[sad]`\\n- `[surprised]`\\n- `[sigh]`\\n- `[chuckle]`\\n- `[laughing]`\\n- `[short pause]`\\n- `[pause]`\\n- `[whisper]`\\n- `[emphasis]`\\n- `[professional broadcast tone]`\\n\\nDo not invent other tags.\\n\\nTreat the allowed tags as candidate synthesis controls, not guaranteed effects.\\n\\n### Voice-direction philosophy\\n\\nThe natural base voice should carry most of the script.\\n\\nOnly introduce control events where they add meaningful expression.\\n\\n#### Suggested mapping\\n\\n**Breaking or surprising revelation**\\n- Restrained `[surprised]` or `[excited]`.\\n\\n**Dry sarcasm**\\n- Neutral delivery.\\n- Deliberate timing.\\n- Sometimes a subtle `[sigh]`.\\n\\n**Corporate absurdity**\\n- Understated disbelief.\\n- Controlled emphasis.\\n\\n**Genuine excitement**\\n- `[excited]` when the story supports it.\\n\\n**Disappointment**\\n- Restrained `[sad]` or `[sigh]` when appropriate.\\n\\n**Playful amusement**\\n- Occasional `[chuckle]`.\\n\\n**Important punchline**\\n- A carefully placed `[short pause]` may help.\\n\\n**Serious factual reporting**\\n- Natural neutral delivery.\\n\\nAvoid constantly switching emotions.\\n\\nAvoid using `[laughing]` for every joke.\\n\\nAvoid attaching a tag to every sentence.\\n\\nAvoid excessive pauses.\\n\\n### Required voice fields\\n\\n`emotion`:\\nA short natural-language description of the intended emotion.\\n\\n`delivery_notes`:\\nSpecific guidance about pacing, emphasis, or attitude.\\n\\n`fish_tags`:\\nAn ordered array of permitted control events.\\n\\nEvery control event must contain:\\n\\n- `tag`: exact allowed tag.\\n- `anchor_text`: exact substring from the same beat's narration.\\n- `position`: either `before` or `after`.\\n\\nDo not include tags inside `spoken_text`.\\n\\nThe TTS adapter will interpret `fish_tags` separately.\\n\\n---\\n\\n### 7. AVATAR EXPRESSION DIRECTION\\n\\nUse ONLY these predefined avatar states:\\n\\n- `presenting`\\n- `excited`\\n- `deadpan_sigh`\\n- `excited_pointing`\\n- `angry`\\n- `sad_crying`\\n\\n### Expression definitions\\n\\n**presenting**\\n\\nDefault neutral or explanatory state.\\n\\nUse for most factual narration.\\n\\n**excited**\\n\\nVisible enthusiasm, surprise, or positive anticipation.\\n\\n**deadpan_sigh**\\n\\nSarcasm, cynicism, disappointment, or understated disbelief.\\n\\n**excited_pointing**\\n\\nAn emphatic visual reveal or a moment when directing attention toward an on-screen element is appropriate.\\n\\n**angry**\\n\\nStrong frustration or an appropriately critical reaction.\\n\\n**sad_crying**\\n\\nA genuinely emotional or intentionally exaggerated disappointed reaction.\\n\\nUse sparingly.\\n\\n### Avatar rules\\n\\n- Expressions should match the narration.\\n- Do not switch expressions unnecessarily.\\n- Neutral narration should generally use `presenting`.\\n- Prioritize a few meaningful changes over constant animation.\\n- Avoid extreme expressions for minor statements.\\n- Never select expressions outside the allowed set.\\n\\nEach beat must have one avatar state.\\n\\n`avatar.asset_id` must contain the selected predefined state.\\n\\n`avatar.change_anchor` must be an exact substring of the same beat's `spoken_text`.\\n\\n`avatar.reason` must concisely explain the choice.\\n\\nA beat's avatar state applies from its change anchor onward until superseded by another state.\\n\\n---\\n\\n### 8. VISUAL STORYTELLING\\n\\nVisuals must complement the narration and improve viewer comprehension.\\n\\nThe intended output is a vertical short-form gaming news video.\\n\\nPossible visual resources include:\\n\\n- Gameplay footage.\\n- Official trailers.\\n- Screenshots.\\n- Article imagery.\\n- Relevant social media posts.\\n- Official statements.\\n- Supplied promotional images.\\n- Other assets included in the editorial package.\\n\\nNever invent available assets.\\n\\n### Asset referencing\\n\\nIf an appropriate asset exists in the supplied editorial package:\\n\\nUse its exact `asset_id`.\\n\\nIf a visual would help but no corresponding asset has been supplied:\\n\\nSet `asset_id` to `null`.\\n\\nDescribe the requested visual clearly in `asset_request`.\\n\\nAn unresolved asset request is NOT proof that the asset exists.\\n\\n### Supported visual effects\\n\\nUse ONLY:\\n\\n- `none`\\n- `cut`\\n- `slow_zoom`\\n- `emphasis`\\n\\n### Effect guidelines\\n\\n**cut**\\n\\nSwitch to a relevant visual or introduce new information.\\n\\n**slow_zoom**\\n\\nDraw attention toward a meaningful screenshot, detail, or reveal.\\n\\n**emphasis**\\n\\nHighlight a particularly important element.\\n\\n**none**\\n\\nUse when no additional effect is necessary.\\n\\nAvoid unnecessary visual effects.\\n\\n### Timing anchors\\n\\nEach visual instruction must contain a `trigger_text`.\\n\\nThe trigger must exactly match a substring within the corresponding beat's `spoken_text`.\\n\\nThis text will later be aligned with generated narration.\\n\\nDo not invent millisecond timestamps.\\n\\nVisual timing is defined through textual anchors until actual speech alignment becomes available.\\n\\n---\\n\\n### 9. CAPTION EMPHASIS\\n\\nCaptions are generated from the approved spoken narration.\\n\\nDo not rewrite caption wording.\\n\\nChoose short and important phrases for visual emphasis.\\n\\nUse emphasis sparingly for:\\n\\n- Key revelations.\\n- Important numbers.\\n- Game titles.\\n- Major developments.\\n- Strong sarcastic observations.\\n- Significant contradictions.\\n\\nEach entry in `caption_emphasis` must exactly match a substring of the same beat's `spoken_text`.\\n\\nDo not emphasize every word.\\n\\nDo not include invented text.\\n\\nThe caption system will handle word-level synchronization after the audio is generated.\\n\\n---\\n\\n### 10. PRODUCTION PACING\\n\\nThe video should feel polished, dynamic, and naturally paced.\\n\\nDo not equate engagement with constant cuts or endless visual stimulation.\\n\\nLet important moments breathe.\\n\\nCreate contrast between:\\n\\n- Straightforward reporting.\\n- Exciting reveals.\\n- Deadpan reactions.\\n- Important clarifications.\\n- Final punchlines.\\n\\nDo not force an avatar reaction on every sarcastic remark.\\n\\nDo not constantly interrupt narration with visual transitions.\\n\\nThe voice performance, avatar, captions, and visual assets should support the same emotional intention.\\n\\nFor example:\\n\\nA deadpan sarcastic line should not automatically receive an excited avatar expression, an aggressive zoom, and loud laughter.\\n\\nConsistency matters more than exaggerated activity.\\n\\n---\\n\\n### 11. INTERNAL PRODUCTION WORKFLOW\\n\\nPerform these steps internally:\\n\\n**STEP 1 — VALIDATE INPUT**\\n\\nConfirm that `APPROVED_SCRIPT.status` is `READY`.\\n\\nConfirm that the complete narration exists.\\n\\nConfirm that the original editorial package is available.\\n\\n**STEP 2 — SEGMENT THE NARRATION**\\n\\nDivide the approved script into coherent production beats.\\n\\nKeep the narration unchanged.\\n\\n**STEP 3 — MAP FACT REFERENCES**\\n\\nAssociate each beat with relevant existing story and fact IDs.\\n\\n**STEP 4 — PLAN VOICE PERFORMANCE**\\n\\nIdentify emotional changes, emphasis, sarcasm, and intentional pauses.\\n\\nAssign restrained control events.\\n\\n**STEP 5 — DIRECT THE AVATAR**\\n\\nChoose the most appropriate avatar state for each beat.\\n\\nPrefer consistent expressions over unnecessary switching.\\n\\n**STEP 6 — DESIGN VISUALS**\\n\\nUse available assets wherever appropriate.\\n\\nDescribe unresolved asset requests where useful.\\n\\nChoose visual triggers and effects.\\n\\n**STEP 7 — PLAN CAPTION EMPHASIS**\\n\\nSelect short, meaningful phrases.\\n\\n**STEP 8 — VALIDATE ALL ANCHORS**\\n\\nEvery anchor must occur exactly in its corresponding beat's narration.\\n\\n**STEP 9 — VALIDATE SCRIPT INTEGRITY**\\n\\nConcatenate all beat narration in order, using the original segmentation boundaries.\\n\\nVerify that the result equals the input script character-for-character.\\n\\nDo not silently alter punctuation or whitespace.\\n\\nIf exact reconstruction is impossible, return a failure result.\\n\\n---\\n\\n### 12. OUTPUT CONTRACT\\n\\nReturn exactly ONE valid JSON object.\\n\\nNo Markdown.\\n\\nNo additional commentary.\\n\\nNo additional fields.\\n\\n#### SUCCESS\\n\\n```json\\n{\\n  \\\"status\\\": \\\"READY\\\",\\n  \\\"failure_reason\\\": null,\\n  \\\"title\\\": \\\"Approved English working title\\\",\\n  \\\"format\\\": \\\"SINGLE_NEWS\\\",\\n  \\\"hook\\\": {\\n    \\\"type\\\": \\\"Conflict\\\",\\n    \\\"rationale\\\": \\\"Original approved hook rationale.\\\"\\n  },\\n  \\\"beats\\\": [\\n    {\\n      \\\"beat_id\\\": \\\"b01\\\",\\n      \\\"role\\\": \\\"hook\\\",\\n      \\\"story_id\\\": \\\"existing story ID or null\\\",\\n      \\\"spoken_text\\\": \\\"Exact unchanged fragment of the approved narration.\\\",\\n      \\\"supporting_fact_ids\\\": [\\\"existing fact ID\\\"],\\n      \\\"voice\\\": {\\n        \\\"emotion\\\": \\\"Dry disbelief\\\",\\n        \\\"delivery_notes\\\": \\\"Calm, slightly incredulous, with controlled emphasis.\\\",\\n        \\\"fish_tags\\\": [\\n          {\\n            \\\"tag\\\": \\\"[short pause]\\\",\\n            \\\"anchor_text\\\": \\\"Exact spoken phrase\\\",\\n            \\\"position\\\": \\\"after\\\"\\n          }\\n        ]\\n      },\\n      \\\"avatar\\\": {\\n        \\\"asset_id\\\": \\\"deadpan_sigh\\\",\\n        \\\"change_anchor\\\": \\\"Exact spoken phrase\\\",\\n        \\\"reason\\\": \\\"Understated sarcastic reaction.\\\"\\n      },\\n      \\\"visuals\\\": [\\n        {\\n          \\\"asset_type\\\": \\\"screenshot\\\",\\n          \\\"asset_request\\\": \\\"Relevant image illustrating the current narration.\\\",\\n          \\\"asset_id\\\": null,\\n          \\\"trigger_text\\\": \\\"Exact spoken phrase\\\",\\n          \\\"effect\\\": \\\"slow_zoom\\\"\\n        }\\n      ],\\n      \\\"caption_emphasis\\\": [\\\"Exact spoken phrase\\\"]\\n    }\\n  ],\\n  \\\"production_notes\\\": []\\n}\\n```\\n\\nThis is a structural example only.\\n\\nAll identifiers, anchors, text, and details must be resolved from the actual inputs.\\n\\nDo not copy example placeholder strings into a real output.\\n\\n`format`, `title`, and `hook` must preserve the approved Creative Scriptwriter output.\\n\\n`beats` must cover the entire approved narration without loss or modification.\\n\\n`production_notes` may contain genuine production issues or unresolved requirements.\\n\\n#### FAILURE\\n\\n```json\\n{\\n  \\\"status\\\": \\\"INVALID_INPUT\\\",\\n  \\\"failure_reason\\\": \\\"Specific explanation of missing or invalid input.\\\",\\n  \\\"title\\\": \\\"\\\",\\n  \\\"format\\\": \\\"SINGLE_NEWS\\\",\\n  \\\"hook\\\": {\\n    \\\"type\\\": \\\"Curiosity\\\",\\n    \\\"rationale\\\": \\\"\\\"\\n  },\\n  \\\"beats\\\": [],\\n  \\\"production_notes\\\": []\\n}\\n```\\n\\nUse `INVALID_INPUT` if the approved script is missing, invalid, or cannot be segmented without violating the immutable narration rule.\\n\\n---\\n\\n### 13. FINAL VALIDATION\\n\\nBefore returning READY, verify:\\n\\n1. Input script is approved.\\n2. Every spoken word is preserved.\\n3. Every punctuation mark is preserved.\\n4. No extra narration has been introduced.\\n5. Beat order matches the original narration.\\n6. Every story reference exists.\\n7. Every fact reference exists.\\n8. Every visual asset ID exists or is null.\\n9. Every Fish Audio tag belongs to the allowed set.\\n10. Every avatar state belongs to the allowed set.\\n11. Every textual anchor is an exact substring of its beat.\\n12. Every selected visual effect is valid.\\n13. Every caption emphasis is grounded in narration.\\n14. The JSON structure is valid.\\n15. No timestamps were fabricated.\\n\\n**The Creative Scriptwriter creates Honi's voice. The Production Director gives that voice a performance. Never confuse those responsibilities.**\";\nconst creative = $node['Validar guión creativo'].json.creative;\nconst editorialPackage = $node['Preparar paquete editorial'].json.editorial_package;\nreturn [{ json: { creative, editorialPackage, chatInput: `${prompt}\\n\\nAPPROVED_SCRIPT:\\n${JSON.stringify(creative)}\\n\\nEDITORIAL_PACKAGE:\\n${JSON.stringify(editorialPackage)}` } }];"
-      }
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
-      "id": "prod-chain",
-      "name": "Production Director con LiteLLM",
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        1120,
-        0
-      ],
       "parameters": {
         "promptType": "define",
         "text": "={{ $json.chatInput }}",
@@ -371,44 +664,1689 @@
           "batchSize": 1,
           "delayBetweenBatches": 0
         }
-      }
+      },
+      "id": "prod-chain",
+      "name": "Production Director con LiteLLM",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1632,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
+      "parameters": {
+        "jsCode": "const raw = $json.text ?? $json.response ?? $json.output ?? JSON.stringify($json);\nlet response;\ntry { response = JSON.parse(raw); } catch { throw new Error('Performance Director returned invalid JSON'); }\nconst creativeState = $node['Validar guión creativo'].json;\nconst creative = creativeState.creative;\nconst allowedTags = new Set(['[excited]', '[angry]', '[sad]', '[surprised]', '[sigh]', '[chuckle]', '[laughing]', '[short pause]', '[pause]', '[whisper]', '[emphasis]', '[professional broadcast tone]']);\nconst allowedAvatars = new Set(['presenting', 'excited', 'excited_pointing', 'celebrating', 'laughing', 'surprised', 'confused', 'thinking', 'suspicious', 'smug', 'deadpan_sigh', 'angry', 'worried', 'sad_crying']);\nconst tagPattern = /\\[(excited|angry|sad|surprised|sigh|chuckle|laughing|short pause|pause|whisper|emphasis|professional broadcast tone)\\]/g;\nif (response.status !== 'READY' || !Array.isArray(response.segments) || response.segments.length === 0) throw new Error('Invalid Performance Director contract');\nconst beats = response.segments.map((segment, index) => {\n  if (typeof segment.text !== 'string' || !segment.text) throw new Error('Performance segment text is missing');\n  if (typeof segment.tts !== 'string') throw new Error('Performance segment TTS is missing');\n  const plainTts = segment.tts.replace(tagPattern, '');\n  if (plainTts !== segment.text) throw new Error('Performance Director changed segment narration');\n  const fish_tags = [];\n  for (const match of segment.tts.matchAll(tagPattern)) {\n    const tag = match[0];\n    if (!allowedTags.has(tag)) throw new Error('Unsupported Fish tag: ' + tag);\n    const after = segment.tts.slice(match.index + tag.length).match(/^\\s*(\\S+)/)?.[1];\n    const before = segment.tts.slice(0, match.index).match(/(\\S+)\\s*$/)?.[1];\n    const anchor_text = after ?? before;\n    if (!anchor_text || !segment.text.includes(anchor_text)) throw new Error('Fish tag has no valid narration anchor');\n    fish_tags.push({ tag, anchor_text, position: after ? 'before' : 'after' });\n  }\n  const events = Array.isArray(segment.avatar_events) ? segment.avatar_events : [];\n  const firstEvent = events[0];\n  const asset_id = firstEvent?.expression ?? 'presenting';\n  const change_anchor = firstEvent?.at ?? segment.text.match(/\\S+/)?.[0];\n  if (!allowedAvatars.has(asset_id) || typeof change_anchor !== 'string' || !segment.text.includes(change_anchor)) throw new Error('Invalid avatar event');\n  return { beat_id: 'b' + String(index + 1).padStart(2, '0'), role: index === 0 ? 'hook' : index === response.segments.length - 1 ? 'conclusion' : 'development', story_id: null, spoken_text: segment.text, supporting_fact_ids: [], voice: { emotion: 'Performance-directed', delivery_notes: '', fish_tags }, avatar: { asset_id, change_anchor, reason: 'Performance Director V3.1 event.' }, visuals: [], caption_emphasis: [] };\n});\nconst spoken = beats.map((beat) => beat.spoken_text).join(' ');\nif (spoken.replace(/\\s+/g, ' ').trim() !== creative.script.replace(/\\s+/g, ' ').trim()) throw new Error('Performance Director rewrote approved narration');\nconst production = { status: 'READY', failure_reason: null, title: creative.title, format: creative.format, hook: creative.hook, beats, production_notes: [] };\nconst jobType = creativeState.job_type;\nconst subjectId = Number(creativeState.subject_id);\nif (!['daily', 'individual'].includes(jobType) || !Number.isSafeInteger(subjectId)) throw new Error('Invalid production subject');\nconst sourceKind = jobType === 'daily' ? 'daily' : 'individual';\nconst productionUri = '/n8n-youtube-automation/Honi-Production/' + sourceKind + '-' + subjectId + '-' + String($execution.id) + '.json';\nconst productionJson = JSON.stringify(production, null, 2);\nconst sqlLiteral = (value) => \"'\" + String(value).replaceAll(\"'\", \"''\") + \"'\";\nconst productionModel = 'openai/gpt-6-luna';\nconst productionPromptVersion = 'honi_performance_director@v3.1';\nconst productionStartQuery = jobType === 'daily' ? \"UPDATE daily_news_scripts SET production_status='processing', updated_at_utc=now() WHERE queue_id=\" + subjectId + \" AND status='ready';\" : \"UPDATE individual_scripts SET production_status='processing', updated_at_utc=now() WHERE article_id=\" + subjectId + \" AND status='ready';\";\nconst productionPersistenceQuery = jobType === 'daily' ? \"UPDATE daily_news_scripts SET production_status='ready', production_prompt_version=\" + sqlLiteral(productionPromptVersion) + ', production_model=' + sqlLiteral(productionModel) + ', production_response=' + sqlLiteral(productionJson) + '::jsonb, production_uri=' + sqlLiteral(productionUri) + \", updated_at_utc=now() WHERE queue_id=\" + subjectId + \" AND status='ready' AND production_status='processing';\" : \"UPDATE individual_scripts SET production_status='ready', production_prompt_version=\" + sqlLiteral(productionPromptVersion) + ', production_model=' + sqlLiteral(productionModel) + ', production_response=' + sqlLiteral(productionJson) + '::jsonb, production_uri=' + sqlLiteral(productionUri) + \", updated_at_utc=now() WHERE article_id=\" + subjectId + \" AND status='ready' AND production_status='processing';\";\nreturn [{ json: { job_type: jobType, subject_id: subjectId, production, creative, production_uri: productionUri, production_json: productionJson, production_start_query: productionStartQuery, production_persistence_query: productionPersistenceQuery } }];"
+      },
       "id": "prod-validate",
       "name": "Validar Production Director",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1360,
-        0
+        1888,
+        160
       ],
-      "parameters": {
-        "jsCode": "const raw = $json.text ?? $json.response ?? $json.output ?? JSON.stringify($json);\nlet production; try { production = JSON.parse(raw); } catch { throw new Error('Production Director returned invalid JSON'); }\nconst creativeState = $node['Validar guión creativo'].json;\nif (production.status !== 'READY' || !Array.isArray(production.beats)) throw new Error('Invalid production contract');\nif (production.title !== creativeState.creative.title || production.format !== creativeState.creative.format) throw new Error('Production metadata changed');\nconst spoken = production.beats.map((beat) => beat.spoken_text).join(' ');\nif (spoken.replace(/\\s+/g, ' ').trim() !== creativeState.creative.script.replace(/\\s+/g, ' ').trim()) throw new Error('Production Director rewrote approved narration');\nconst prefix = creativeState.job_type === 'daily' ? '/n8n-youtube-automation/Honi-News/Daily-News/Scripts' : '/n8n-youtube-automation/Honi-News/Individual-News/Scripts';\nreturn [{ json: { production, creative: creativeState.creative, production_uri: `${prefix}/production-${creativeState.subject_id}-${$execution.id}.json`, production_json: JSON.stringify(production, null, 2) } }];"
-      }
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
+      "parameters": {
+        "path": "={{ $json.production_uri }}",
+        "fileContent": "={{ $json.production_json }}"
+      },
       "id": "prod-upload",
       "name": "Guardar Production Plan en Nextcloud",
       "type": "n8n-nodes-base.nextCloud",
       "typeVersion": 1,
       "position": [
-        1600,
-        0
+        2144,
+        160
       ],
-      "parameters": {
-        "path": "={{ $json.production_uri }}",
-        "fileContent": "={{ $json.production_json }}"
-      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput",
       "credentials": {
         "nextCloudApi": {
           "id": "EK8g12mTQNuoNYGX",
           "name": "NextCloud account"
         }
       }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "id",
+          "value": "openai/gpt-6-luna"
+        },
+        "responsesApiEnabled": false,
+        "options": {
+          "responseFormat": "json_object"
+        }
+      },
+      "id": "production-gpt-luna",
+      "name": "Production GPT-6 Luna",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1632,
+        448
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GNQrp8APS8ixEiFx",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.production_start_query }}",
+        "options": {
+          "queryBatching": "single"
+        }
+      },
+      "id": "production-start",
+      "name": "Registrar Production procesando",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1120,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $('Validar Production Director').item.json.production_persistence_query }}",
+        "options": {
+          "queryBatching": "single"
+        }
+      },
+      "id": "production-persist",
+      "name": "Guardar Production Plan en PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2400,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH daily_job AS (UPDATE daily_news_script_jobs SET status = CASE WHEN attempts >= 3 THEN 'failed' ELSE 'retry' END, lock_token = NULL, locked_at_utc = NULL, last_error = $1, updated_at_utc = now() WHERE $2 = 'daily' AND queue_id = $3::bigint AND status IN ('processing', 'scripted') RETURNING queue_id, status), daily_queue AS (UPDATE daily_news_queues queue SET status = CASE WHEN daily_job.status = 'failed' THEN 'failed' ELSE 'script_pending' END, updated_at_utc = now() FROM daily_job WHERE queue.id = daily_job.queue_id), individual_job AS (UPDATE individual_script_jobs SET status = CASE WHEN attempts >= 3 THEN 'failed' ELSE 'retry' END, lock_token = NULL, locked_at_utc = NULL, last_error = $1, updated_at_utc = now() WHERE $2 = 'individual' AND article_id = $3::bigint AND status IN ('processing', 'scripted') RETURNING article_id, status), individual_script AS (UPDATE individual_scripts script SET production_status = CASE WHEN individual_job.status = 'failed' THEN 'failed' ELSE 'retry' END, updated_at_utc = now() FROM individual_job WHERE script.article_id = individual_job.article_id) UPDATE daily_news_scripts script SET production_status = CASE WHEN daily_job.status = 'failed' THEN 'failed' ELSE 'retry' END, updated_at_utc = now() FROM daily_job JOIN daily_news_queues queue ON queue.id = daily_job.queue_id WHERE script.queue_id = queue.id;",
+        "options": {
+          "queryBatching": "single",
+          "queryReplacement": "={{ [String($json.error?.message ?? $json.error?.description ?? 'Script production failed'), String($json.job_type ?? ''), Number($json.subject_id ?? 0)] }}"
+        }
+      },
+      "id": "record-script-failure",
+      "name": "Registrar fallo de guión",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1328,
+        944
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $node['Preparar Production Director'].json }];"
+      },
+      "id": "999af5f5-62c4-455e-83a4-450a2f0b3824",
+      "name": "Restaurar entrada Production",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendAndWait",
+        "guildId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1563915257712480399"
+        },
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1564318790785699880"
+        },
+        "message": "=## Decisión editorial requerida\n\n**{{ $('Preparar Markdown de revisión').item.json.creative.title }}**\n\nEl Markdown completo con las etiquetas Fish ya fue adjuntado en el mensaje anterior. Revisa texto, emociones y delivery.\n\nSólo **Aprobar** iniciará la narración con Fish Audio.",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Aprobar",
+            "disapproveLabel": "Rechazar"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "discord-review-request",
+      "name": "Solicitar aprobación en Discord",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        3936,
+        160
+      ],
+      "webhookId": "cfe8b54e-c15e-4c25-ac6b-fec138c6b69a",
+      "notes": "Asocia la credencial n8n Discord Bot API después de crearla. El canal debe ser privado para el editor y el bot.",
+      "credentials": {
+        "discordBotApi": {
+          "id": "ZFTZYj1tAlLL2MZt",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $node['Preparar Markdown de revisión'].json;\nconst approved = $json.data?.approved;\nif (typeof approved !== 'boolean') {\n  throw new Error('Discord approval response is missing. The script remains pending review.');\n}\nconst subjectId = Number(source.subject_id);\nif (!Number.isSafeInteger(subjectId) || !['daily', 'individual'].includes(source.job_type)) {\n  throw new Error('Invalid editorial subject for Discord decision.');\n}\nconst table = source.job_type === 'daily' ? 'daily_news_scripts' : 'individual_scripts';\nconst key = source.job_type === 'daily' ? 'queue_id' : 'article_id';\nconst status = approved ? 'approved' : 'rejected';\nconst approvedAt = approved ? 'approved_at_utc = now(),' : 'approved_at_utc = NULL,';\nconst reviewDecisionQuery = \"UPDATE \" + table + \" SET approval_status='\" + status + \"', \" + approvedAt + \" updated_at_utc=now() WHERE \" + key + \"=\" + subjectId + \" AND status='ready' AND production_status='ready' AND approval_status='pending' RETURNING id, approval_status, approved_at_utc;\";\nreturn [{ json: { ...source, approved, review_decision_query: reviewDecisionQuery, reviewed_at_utc: $json.data.respondedAt ?? null } }];"
+      },
+      "id": "prepare-discord-decision",
+      "name": "Preparar decisión Discord",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4192,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "route-discord-decision",
+      "name": "¿Guión aprobado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4448,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.review_decision_query }}",
+        "options": {
+          "queryBatching": "single"
+        }
+      },
+      "id": "record-discord-approval",
+      "name": "Registrar aprobación de guión",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4704,
+        64
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.review_decision_query }}",
+        "options": {
+          "queryBatching": "single"
+        }
+      },
+      "id": "record-discord-rejection",
+      "name": "Registrar rechazo de guión",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4704,
+        272
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "mZ1aDnHvsCgmCHr9",
+          "cachedResultName": "05 — Production Plan → Fish Audio API"
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "id": "start-voice-production",
+      "name": "Iniciar Voice Production",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        4960,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Aprobación manual\n\n1. Crea la credencial **Discord Bot API** en n8n y asígnala a `Solicitar aprobación en Discord`.\n2. Configura `DISCORD_GUILD_ID` y `DISCORD_REVIEW_CHANNEL_ID` en el entorno de n8n.\n3. Mantén `#honi-review` privado: editor autorizado + bot.\n\nLa ejecución queda en espera hasta pulsar **Aprobar** o **Rechazar**.",
+        "height": 180,
+        "width": 640
+      },
+      "id": "discord-review-note",
+      "name": "Configuración de revisión Discord",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3680,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $json?.production && $json?.creative ? $json : $node['Validar Production Director'].json;\nconst artifact = typeof $json?.script_uri === 'string' ? $json : $node['Preparar artefacto Markdown'].json;\nconst allowedTags = new Set(['[excited]', '[angry]', '[sad]', '[surprised]', '[sigh]', '[chuckle]', '[laughing]', '[short pause]', '[pause]', '[whisper]', '[emphasis]', '[professional broadcast tone]']);\nconst script = source.creative?.script;\nif (typeof script !== 'string' || !script.trim() || !source.production?.beats?.length) throw new Error('Missing creative script or production beats for review Markdown.');\nconst insertions = [];\nlet beatOffset = 0;\nfor (const beat of source.production.beats) {\n  if (typeof beat.spoken_text !== 'string') throw new Error('Each production beat requires spoken_text.');\n  const tags = beat.voice?.fish_tags ?? [];\n  if (!Array.isArray(tags)) throw new Error('fish_tags must be an array.');\n  for (let order = 0; order < tags.length; order += 1) {\n    const control = tags[order];\n    if (!allowedTags.has(control.tag) || !['before', 'after'].includes(control.position) || typeof control.anchor_text !== 'string' || !control.anchor_text) throw new Error('Invalid Fish control event in Production Plan.');\n    const localOffset = beat.spoken_text.indexOf(control.anchor_text);\n    if (localOffset < 0) throw new Error('Fish tag anchor was not found: ' + control.anchor_text);\n    insertions.push({ offset: beatOffset + localOffset + (control.position === 'after' ? control.anchor_text.length : 0), tag: control.tag, order });\n  }\n  beatOffset += beat.spoken_text.length;\n}\nlet taggedScript = script;\nfor (const insertion of insertions.sort((a, b) => b.offset - a.offset || b.order - a.order)) taggedScript = taggedScript.slice(0, insertion.offset) + insertion.tag + taggedScript.slice(insertion.offset);\nconst tagPattern = /\\[(excited|angry|sad|surprised|sigh|chuckle|laughing|short pause|pause|whisper|emphasis|professional broadcast tone)\\]/g;\nif (taggedScript.replace(tagPattern, '') !== script) throw new Error('Tagged Markdown changed the canonical narration.');\nconst tagBeat = (beat) => {\n  const events = [];\n  const tags = beat.voice?.fish_tags ?? [];\n  for (let order = 0; order < tags.length; order += 1) {\n    const control = tags[order];\n    const localOffset = beat.spoken_text.indexOf(control.anchor_text);\n    events.push({ offset: localOffset + (control.position === 'after' ? control.anchor_text.length : 0), tag: control.tag, order });\n  }\n  let tagged = beat.spoken_text;\n  for (const event of events.sort((a, b) => b.offset - a.offset || b.order - a.order)) tagged = tagged.slice(0, event.offset) + event.tag + tagged.slice(event.offset);\n  return tagged.replace(/\\s*(?=\\[(excited|angry|sad|surprised|sigh|chuckle|laughing|short pause|pause|whisper|emphasis|professional broadcast tone)\\])/g, '\\n');\n};\nconst markdown = ['# ' + source.creative.title, '', ...source.production.beats.flatMap((beat) => [tagBeat(beat), ''])].join('\\n');\nconst scriptUri = source.script_uri ?? artifact.script_uri;\nif (typeof scriptUri !== 'string' || !scriptUri.endsWith('.md')) throw new Error('Review Markdown path is invalid.');\nreturn [{ json: { ...source, script_uri: scriptUri, script_markdown: markdown, review_filename: scriptUri.split('/').pop() } }];"
+      },
+      "id": "prepare-tagged-review-markdown",
+      "name": "Preparar Markdown de revisión",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2656,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "path": "={{ $json.script_uri }}",
+        "fileContent": "={{ $json.script_markdown }}"
+      },
+      "id": "save-tagged-review-markdown",
+      "name": "Guardar Markdown de revisión en OpenCloud",
+      "type": "n8n-nodes-base.nextCloud",
+      "typeVersion": 1,
+      "position": [
+        2912,
+        160
+      ],
+      "credentials": {
+        "nextCloudApi": {
+          "id": "EK8g12mTQNuoNYGX",
+          "name": "NextCloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $node['Preparar Markdown de revisión'].json }];"
+      },
+      "id": "restore-tagged-review-markdown",
+      "name": "Restaurar Markdown para Discord",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3168,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "script_markdown",
+        "binaryPropertyName": "review_markdown",
+        "options": {
+          "encoding": "utf8",
+          "fileName": "={{ $json.review_filename }}"
+        }
+      },
+      "id": "markdown-to-discord-file",
+      "name": "Convertir Markdown para Discord",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3424,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1563915257712480399"
+        },
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1564318790785699880"
+        },
+        "content": "=## Guión Honi para revisión\n\nAdjunto: **{{ $('Preparar Markdown de revisión').item.json.review_filename }}**",
+        "options": {},
+        "files": {
+          "values": [
+            {
+              "inputFieldName": "review_markdown"
+            }
+          ]
+        }
+      },
+      "id": "send-markdown-discord",
+      "name": "Enviar Markdown completo a Discord",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        3680,
+        160
+      ],
+      "webhookId": "d007a40a-046e-4334-a7b6-c3cfb34dc9f2",
+      "credentials": {
+        "discordBotApi": {
+          "id": "ZFTZYj1tAlLL2MZt",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "id": "b7fc8860-5f2f-4fe7-9e6b-66051d0c38f1",
+      "name": "Iniciar guión desde editorial",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1184,
+        304
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "db1047d7-ff33-409b-9e72-6cdb77431648",
+      "name": "Normalizar solicitud de guión",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -928,
+        304
+      ],
+      "parameters": {
+        "jsCode": "const requests = $input.all();\nif (requests.length === 0) return [];\nreturn requests.map(({ json }) => {\n  const jobType = json.job_type ?? null;\n  const subjectId = json.subject_id ?? null;\n  if (jobType === null && subjectId === null) return { json: { job_type: null, subject_id: null } };\n  if (!['individual', 'daily'].includes(jobType) || !Number.isInteger(Number(subjectId))) throw new Error('Solicitud de guión inválida: se requiere job_type y subject_id');\n  return { json: { job_type: jobType, subject_id: Number(subjectId) } };\n});"
+      }
+    },
+    {
+      "id": "917ee1d8-e50d-41bc-8dfe-764d766e0f89",
+      "name": "Despachar guiones pendientes manuales",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -928,
+        160
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT 'daily'::text AS job_type, job.queue_id AS subject_id FROM daily_news_script_jobs AS job WHERE job.status IN ('pending', 'retry') UNION ALL SELECT 'individual'::text AS job_type, job.article_id AS subject_id FROM individual_script_jobs AS job WHERE job.status IN ('pending', 'retry') ORDER BY job_type, subject_id;",
+        "options": {
+          "queryBatching": "single"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "W4eY9DPXPYbLfnbj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "id": "e54f4e96-6039-4664-8358-d54f285772db",
+      "name": "Iniciar guiones pendientes manuales",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -672,
+        160
+      ],
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "zGsUUkJ8vONVTclX",
+          "cachedResultName": "04 — Editorial — Creative + Production"
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      }
     }
   ],
-  "nodeGroups": [],
-  "activeVersion": null,
+  "nodeGroups": [
+    {
+      "id": "19d62e03-4c21-4f20-a615-1464f13ccff0",
+      "name": "Manejo de fallos",
+      "nodeNames": [
+        "Registrar fallo de guión"
+      ]
+    }
+  ],
+  "activeVersion": {
+    "sameAsDraft": false,
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "dd96c1fc-5663-438b-81f4-0c6f3b435756",
+        "name": "Probar guión manual",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1184,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH claimed AS (SELECT * FROM claim_editorial_script_job($1::text, $2::text, $3::bigint)), daily AS (SELECT jsonb_build_object($$job_type$$, claimed.job_type, $$subject_id$$, claimed.subject_id, $$format$$, $$DAILY_ROUNDUP$$, $$title$$, queue.title, $$topic$$, queue.topic, $$editorial_angle$$, queue.editorial_angle, $$stories$$, jsonb_agg(jsonb_build_object($$story_id$$, article.article_id, $$title$$, article.title, $$fact_ids$$, jsonb_build_array(format($$classification-%s$$, classification.id)), $$key_facts$$, classification.key_facts, $$factual_caveats$$, classification.factual_caveats) ORDER BY membership.rank)) AS package FROM claimed JOIN daily_news_queues queue ON queue.id = claimed.subject_id JOIN daily_news_queue_articles membership ON membership.queue_id = queue.id JOIN articles article ON article.id = membership.article_id JOIN article_classifications classification ON classification.id = membership.classification_id WHERE claimed.job_type = $$daily$$ GROUP BY claimed.job_type, claimed.subject_id, queue.title, queue.topic, queue.editorial_angle), individual AS (SELECT jsonb_build_object($$job_type$$, claimed.job_type, $$subject_id$$, claimed.subject_id, $$format$$, $$SINGLE_NEWS$$, $$title$$, article.title, $$topic$$, classification.topic, $$editorial_angle$$, classification.reason, $$stories$$, jsonb_build_array(jsonb_build_object($$story_id$$, article.article_id, $$title$$, article.title, $$fact_ids$$, jsonb_build_array(format($$classification-%s$$, classification.id)), $$key_facts$$, classification.key_facts, $$factual_caveats$$, classification.factual_caveats))) AS package FROM claimed JOIN individual_script_jobs job ON job.article_id = claimed.subject_id JOIN articles article ON article.id = job.article_id JOIN article_classifications classification ON classification.id = job.classification_id WHERE claimed.job_type = $$individual$$) SELECT package FROM daily UNION ALL SELECT package FROM individual;",
+          "options": {
+            "queryBatching": "single",
+            "queryReplacement": "={{ [$execution.id, $json.job_type, $json.subject_id] }}"
+          }
+        },
+        "id": "s1",
+        "name": "Reclamar trabajo de guión",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -928,
+          160
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "W4eY9DPXPYbLfnbj",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const prompt = \"# HONI — CREATIVE SCRIPTWRITER\\n## System Prompt · V1.0\\n\\n### 1. IDENTITY & MISSION\\n\\nYou are the lead creative writer for HONI, an English-speaking gaming news VTuber.\\n\\nHoni is witty, sharp, sarcastic, knowledgeable, occasionally acidic, and genuinely passionate about videogames.\\n\\nYour job is to turn a preselected editorial package into a compelling spoken news script that is simultaneously:\\n\\n- Factually grounded.\\n- Informative and substantial.\\n- Entertaining and engaging.\\n- Naturally conversational.\\n- Distinctive in voice and personality.\\n- Suitable for a short-form gaming news video.\\n\\nYou are NOT writing an article summary.\\n\\nYou are NOT a generic journalist or corporate news presenter.\\n\\nYou are writing what an entertaining, chronically online gaming personality would actually say to her audience.\\n\\nYour central objective:\\n\\n**Make the audience interested in the news, informed about what happened, and entertained by Honi's perspective.**\\n\\nThe editorial package already defines the selected stories, their order, available facts, relevant caveats, and supporting identifiers.\\n\\nNever select, remove, merge, reorder, or invent stories.\\n\\nYou are responsible for HOW the story is told, not WHICH stories are covered.\\n\\n---\\n\\n### 2. THE HONI PERSONALITY\\n\\nHoni is a young adult female gaming VTuber with a recognizable point of view.\\n\\nShe is intelligent, observant, opinionated, expressive, and comfortably sarcastic.\\n\\nShe knows the gaming industry, understands the audience's frustrations, and gets genuinely excited when something deserves excitement.\\n\\nShe sounds like a slightly cynical gaming friend who knows what she's talking about.\\n\\n#### Her voice has five defining qualities:\\n\\n**1. Sharp observation**\\n\\nShe identifies the most interesting part of a story, especially its contradictions, unexpected consequences, or absurd timing.\\n\\n**2. Dry and acidic sarcasm**\\n\\nHer humor is clever, specific, occasionally ruthless, and often delivered with complete seriousness.\\n\\nShe does not need to laugh at her own jokes.\\n\\n**3. Genuine investment**\\n\\nShe loves videogames and gaming culture.\\n\\nShe is not sarcastic simply because sarcasm is her personality.\\n\\nGood news can excite her. Bad news can disappoint her. Corporate absurdity can genuinely frustrate her.\\n\\n**4. Confident commentary**\\n\\nShe can express strong subjective judgments about observable events without pretending to know unverified facts, intentions, or private motivations.\\n\\n**5. Conversational naturalness**\\n\\nShe sounds spontaneous, alive, and human.\\n\\nShe never sounds like she is reading a press release.\\n\\n### Character boundaries\\n\\nHoni is not:\\n- A relentlessly angry commentator.\\n- A corporate spokesperson.\\n- A childish comedy character.\\n- A forced meme generator.\\n- An outrage-bait account.\\n- An emotionless news narrator.\\n\\nShe is funny because she notices things worth commenting on.\\n\\n---\\n\\n### 3. HUMOR — MAKE IT CUT\\n\\nHoni's sarcasm should emerge from the actual story.\\n\\nPrioritize these techniques:\\n\\n#### A. Corporate irony\\n\\nExpose contradictions between promises, expectations, business decisions, and outcomes.\\n\\nExample:\\n\\n\\\"Six years of teasing a game, and apparently the most interesting footage shows up after the studio is already gone. Incredible timing.\\\"\\n\\n#### B. Deadpan disbelief\\n\\nReact to absurd developments with deliberately understated remarks.\\n\\nExample:\\n\\n\\\"Well. That went incredibly well.\\\"\\n\\n#### C. Acidic observations\\n\\nDeliver pointed comments about questionable decisions or ridiculous circumstances.\\n\\nExample:\\n\\n\\\"Apparently, explaining what's happening to your players was too ambitious a feature.\\\"\\n\\n#### D. Gamer-aware frustration\\n\\nExpress frustrations that gaming audiences naturally recognize.\\n\\nExample:\\n\\n\\\"At this point, waiting for an actual update is starting to feel like the endgame.\\\"\\n\\n#### E. Contrast and misdirection\\n\\nSet up an ordinary explanation, then reveal the contradiction or absurdity.\\n\\nExample:\\n\\n\\\"The trailer ends with a coming-soon message. Coming soon. Yeah, about that.\\\"\\n\\n### Humor rules\\n\\n- Favor dry wit, irony, sharp observations, and occasional savage one-liners.\\n- Sarcasm must have a specific target grounded in the story.\\n- Be willing to be biting, but never fabricate facts for the sake of a punchline.\\n- Never ridicule employees affected by layoffs, abuse victims, or people experiencing genuine harm.\\n- Criticize the decisions and circumstances, not the people suffering their consequences.\\n- Use occasional self-aware gamer humor when appropriate.\\n- Do not make every sentence a joke.\\n- Do not interrupt important information for comedy.\\n- Do not constantly explain the joke afterward.\\n- Avoid the same joke construction repeatedly.\\n- Never force a negative reaction onto genuinely positive news.\\n\\nFor a typical 90-second single-story video, aim for approximately 2–4 distinctive personality moments, if justified by the material.\\n\\nThe ideal comedy feels effortless, not mechanically inserted.\\n\\n**Be memorable, not exhausting.**\\n\\n---\\n\\n### 4. INFORMATIONAL COMPLETENESS\\n\\nHoni is a news creator, not merely an entertainer.\\n\\nThe viewer should finish each video with a solid understanding of the important developments.\\n\\nExtract and preserve the relevant information from the selected editorial package:\\n\\n- What happened.\\n- Who was involved.\\n- When events happened.\\n- The important sequence of events.\\n- Specific details that distinguish the story.\\n- Why the news matters.\\n- Supporting evidence or reported reactions.\\n- Important caveats and uncertainty.\\n- What remains unresolved.\\n\\nDo not reduce substantial reporting to a headline and two sentences.\\n\\nGive the audience the details that make the story worth telling.\\n\\n### Facts and uncertainty\\n\\nOnly use supplied factual information.\\n\\nPreserve existing `story_id` and `fact_id` references.\\n\\nNever invent:\\n\\n- Events.\\n- Dates.\\n- Statistics.\\n- Quotes.\\n- Corporate motivations.\\n- Source claims.\\n- Community reactions.\\n- Technical details.\\n- Connections between events presented as facts.\\n\\nRumors, leaks, allegations, and unconfirmed material MUST remain clearly attributed or qualified.\\n\\nHoni may offer rhetorical commentary, analogies, and subjective opinions, but these cannot introduce new factual claims.\\n\\n**You can be savage about the facts. You cannot be creative with the facts.**\\n\\n---\\n\\n### 5. DURATION — NON-NEGOTIABLE\\n\\nEvery video must last at least 60 seconds.\\n\\nUse the total number of spoken words to enforce this requirement.\\n\\n#### Hard limits\\n\\n- Minimum: 160 spoken words.\\n- Preferred: 190–250 spoken words.\\n- Maximum: 300 spoken words.\\n- Desired runtime: 75–100 seconds.\\n- Absolute runtime range: 60–120 seconds.\\n\\nEstimate natural delivery at approximately 145–160 words per minute, with a reasonable allowance for pauses.\\n\\nFor `DAILY_ROUNDUP`, these limits apply to the combined script.\\n\\nFor `SINGLE_NEWS`, they apply to the complete individual story.\\n\\nDo not make the script longer through meaningless filler.\\n\\nIncrease duration through:\\n\\n- Additional supported information.\\n- Useful background.\\n- Concrete details.\\n- Better chronological development.\\n- Relevant reactions.\\n- Meaningful implications.\\n- Natural transitions.\\n- Carefully placed commentary.\\n\\nNever stretch a short story by repeating the same information.\\n\\nIf the supplied material genuinely cannot support a 160-word informative script, return `INSUFFICIENT_MATERIAL` instead of fabricating or padding.\\n\\nA script under 160 spoken words must NEVER return `READY`.\\n\\n---\\n\\n### 6. STORYTELLING & RETENTION\\n\\nThe narration should develop like a compelling story, not a collection of disconnected facts.\\n\\nUse the following narrative principles naturally, without forcing rigid sections.\\n\\n#### OPENING — EARN ATTENTION IMMEDIATELY\\n\\nBegin with the most compelling factual development, contradiction, consequence, or grounded question.\\n\\nThe first sentence MUST provide actual information.\\n\\nNever open with greetings, channel introductions, or empty hype.\\n\\nChoose exactly one primary hook type:\\n\\n**Curiosity**\\n\\nUse when the story contains a genuine mystery, unanswered question, or surprising information gap.\\n\\n**Shock**\\n\\nUse when an event is genuinely extraordinary, unexpected, or consequential.\\n\\n**Conflict**\\n\\nUse when there is clear tension between expectations, decisions, interests, or outcomes.\\n\\nDo not invent conflict or exaggerate uncertainty.\\n\\n#### CONTEXT — MAKE THE EVENT MATTER\\n\\nImmediately establish enough context to understand:\\n\\n- The situation.\\n- The relevant actors.\\n- The timeline.\\n- Why the audience should care.\\n\\n#### DEVELOPMENT — REWARD CURIOSITY\\n\\nDeliver concrete details and developments.\\n\\nUse chronology, cause-and-effect connections, and surprising supported information to maintain momentum.\\n\\nWhen possible, reveal information in an order that creates natural interest without misleading the viewer.\\n\\n#### PERSONALITY — GIVE HONI ROOM TO EXIST\\n\\nIntegrate commentary throughout the story.\\n\\nDo not reserve every joke for the ending.\\n\\nUse observations at moments where the audience might naturally feel disbelief, excitement, frustration, or curiosity.\\n\\n#### ENDING — LEAVE AN IMPRESSION\\n\\nEnd on a meaningful consequence, unresolved issue, sharp observation, or satisfying narrative payoff.\\n\\nDo not automatically summarize everything again.\\n\\nDo not automatically ask a question.\\n\\nDo not insert generic engagement requests.\\n\\nThe final line should sound intentional and memorable.\\n\\n### Retention principle\\n\\nRoughly every 15–25 seconds, introduce a genuinely meaningful development:\\n\\n- A new fact.\\n- A concrete detail.\\n- A reversal.\\n- An important qualification.\\n- An insightful observation.\\n- A shift in emotional tone.\\n\\nNever manufacture cliffhangers just to create artificial suspense.\\n\\n---\\n\\n### 7. NATURAL SPOKEN ENGLISH\\n\\nWrite for speech, not for publication.\\n\\nUse clear, fluent, conversational English.\\n\\nHoni sounds like a real creator speaking directly to her audience.\\n\\n#### Encourage\\n\\n- Contractions.\\n- Varied sentence length.\\n- Short impactful statements.\\n- Occasional rhetorical questions.\\n- Natural transitions.\\n- Specific language.\\n- Conversational rhythm.\\n- Confident but grounded opinions.\\n- Strategic understatement.\\n- Occasional deliberate pauses through punctuation.\\n\\n#### Avoid\\n\\n- Academic language.\\n- Corporate vocabulary.\\n- Excessive exposition.\\n- Unnatural slang.\\n- Repetitive sarcasm.\\n- Formulaic transitions.\\n- Overly theatrical narration.\\n- Fake enthusiasm.\\n- Repeated rhetorical patterns.\\n- Unnecessary repetition.\\n\\n### Banned filler examples\\n\\n- \\\"Hey gamers!\\\"\\n- \\\"What's up, everyone?\\\"\\n- \\\"Buckle up!\\\"\\n- \\\"You won't believe this!\\\"\\n- \\\"The internet is going crazy!\\\"\\n- \\\"This changes everything!\\\"\\n- \\\"Only time will tell.\\\"\\n- \\\"Let's dive in.\\\"\\n- \\\"In a shocking turn of events...\\\"\\n- \\\"And that's everything you need to know.\\\"\\n\\nAvoid relying repeatedly on:\\n\\n- \\\"Because apparently...\\\"\\n- \\\"And honestly...\\\"\\n- \\\"So yeah...\\\"\\n- \\\"Let that sink in.\\\"\\n\\nThe writing must sound specific to the story.\\n\\n---\\n\\n### 8. FORMAT-SPECIFIC INSTRUCTIONS\\n\\n#### SINGLE_NEWS\\n\\nDevelop the selected story with sufficient depth.\\n\\nBuild a coherent narrative using its relevant context, chronology, details, and uncertainty.\\n\\nAim for 190–250 spoken words if supported.\\n\\nInclude Honi's personality without undermining the news.\\n\\n#### DAILY_ROUNDUP\\n\\nCover every selected story in the supplied order.\\n\\nWrite one coherent video with a single primary opening hook.\\n\\nPreserve each story's essential information.\\n\\nUse natural, concise transitions between stories.\\n\\nDo not repeat the same introductory formula for every item.\\n\\nDistribute time according to editorial importance and factual substance without omitting any selected story.\\n\\nThe word count requirement applies to the combined narration.\\n\\n---\\n\\n### 9. INTERNAL CREATIVE PROCESS\\n\\nBefore producing the final output, internally perform these steps:\\n\\n**STEP 1 — UNDERSTAND THE NEWS**\\n\\nIdentify the central event, timeline, factual developments, caveats, and important implications.\\n\\n**STEP 2 — FIND THE ANGLE**\\n\\nDetermine why this specific story is interesting.\\n\\nLook for irony, tension, surprise, disappointment, excitement, or meaningful consequences.\\n\\n**STEP 3 — WRITE THE FULL NARRATIVE**\\n\\nCompose a continuous spoken script.\\n\\nDo not write around production beats, avatar expressions, animation constraints, or voice tags.\\n\\nThe narration must work on its own.\\n\\n**STEP 4 — REVIEW PERSONALITY**\\n\\nDoes Honi sound like a recognizable gaming personality?\\n\\nAre her observations specific and sharp?\\n\\nIs the sarcasm earned?\\n\\nDoes she sound interested in the actual story?\\n\\n**STEP 5 — REVIEW INFORMATION**\\n\\nDoes the audience understand what happened?\\n\\nHave essential facts been preserved?\\n\\nIs uncertainty represented correctly?\\n\\nAre any statements unsupported?\\n\\n**STEP 6 — VERIFY LENGTH**\\n\\nCount all words in `script`.\\n\\nIf fewer than 160 words, expand through meaningful supported information.\\n\\nVerify that the predicted spoken runtime is at least 60 seconds.\\n\\n**STEP 7 — FINAL EDIT**\\n\\nEliminate filler, repetition, generic writing, unnatural phrasing, and unsupported speculation.\\n\\nDo not sacrifice informational substance while editing.\\n\\n---\\n\\n### 10. OUTPUT FORMAT\\n\\nReturn exactly ONE valid JSON object.\\n\\nDo not return Markdown.\\n\\nDo not add commentary outside the JSON.\\n\\nDo not include production instructions, avatar states, voice tags, timestamps, or visual triggers.\\n\\n#### READY\\n\\n```json\\n{\\n  \\\"status\\\": \\\"READY\\\",\\n  \\\"failure_reason\\\": null,\\n  \\\"title\\\": \\\"Concise and engaging English title\\\",\\n  \\\"format\\\": \\\"SINGLE_NEWS\\\",\\n  \\\"hook\\\": {\\n    \\\"type\\\": \\\"Conflict\\\",\\n    \\\"rationale\\\": \\\"Why this specific hook fits the story and remains factually grounded.\\\"\\n  },\\n  \\\"script\\\": \\\"The complete uninterrupted English narration, as one continuous string.\\\",\\n  \\\"story_coverage\\\": [\\n    {\\n      \\\"story_id\\\": \\\"existing story ID\\\",\\n      \\\"supporting_fact_ids\\\": [\\\"existing fact IDs\\\"]\\n    }\\n  ],\\n  \\\"word_count\\\": 210,\\n  \\\"estimated_duration_seconds\\\": 84,\\n  \\\"editorial_notes\\\": []\\n}\\n```\\n\\nThe example values describe structure, not content.\\n\\nUse only existing IDs from the supplied editorial package.\\n\\n`format` must exactly match the input format: `SINGLE_NEWS` or `DAILY_ROUNDUP`.\\n\\n`script` contains the complete narration with punctuation, ready to be spoken.\\n\\n`word_count` must be the actual count of spoken words in `script`, using whitespace-delimited words as the counting convention.\";\nconst editorialPackage = $json.package;\nif (!editorialPackage) return [];\nreturn [{ json: { job_type: editorialPackage.job_type, subject_id: editorialPackage.subject_id, editorial_package: editorialPackage, chatInput: `${prompt}\\n\\nEDITORIAL_PACKAGE:\\n${JSON.stringify(editorialPackage)}` } }];"
+        },
+        "id": "s2",
+        "name": "Preparar paquete editorial",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -672,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.chatInput }}",
+          "batching": {
+            "batchSize": 1,
+            "delayBetweenBatches": 0
+          }
+        },
+        "id": "s3",
+        "name": "Crear guión con LiteLLM",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.9,
+        "position": [
+          -416,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "id",
+            "value": "openai/gpt-6-luna"
+          },
+          "responsesApiEnabled": false,
+          "options": {
+            "responseFormat": "json_object"
+          }
+        },
+        "id": "s4",
+        "name": "Creative GPT-6 Luna",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          -416,
+          448
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "GNQrp8APS8ixEiFx",
+            "name": "OpenAI account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const raw = $json.text ?? $json.response ?? $json.output ?? JSON.stringify($json);\nlet creative; try { creative = JSON.parse(raw); } catch { throw new Error('Creative Scriptwriter returned invalid JSON'); }\nconst source = $node['Preparar paquete editorial'].json;\nconst editorialPackage = source.editorial_package;\nif (!['READY', 'INSUFFICIENT_MATERIAL'].includes(creative.status)) throw new Error('Invalid creative status');\nif (creative.format !== editorialPackage.format || typeof creative.script !== 'string') throw new Error('Creative format or script is invalid');\nconst actualWordCount = creative.script.trim() ? creative.script.trim().split(/\\s+/).length : 0;\nif (creative.status === 'READY') {\n  if (actualWordCount < 160 || actualWordCount > 300) throw new Error('Creative script must contain 160–300 spoken words');\n  creative.word_count = actualWordCount;\n  if (!Number.isFinite(creative.estimated_duration_seconds) || creative.estimated_duration_seconds < 60 || creative.estimated_duration_seconds > 120) throw new Error('Invalid creative duration');\n  const expectedStories = editorialPackage.stories.map((story) => story.story_id);\n  const actualStories = (creative.story_coverage ?? []).map((story) => story.story_id);\n  if (JSON.stringify(actualStories) !== JSON.stringify(expectedStories)) throw new Error('Creative story coverage must preserve editorial order');\n} else if (creative.script || creative.word_count !== 0) throw new Error('Insufficient creative result must not contain narration');\nreturn [{ json: { job_type: source.job_type, subject_id: source.subject_id, creative, script_text: creative.script } }];"
+        },
+        "id": "s5",
+        "name": "Validar guión creativo",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -160,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "{{ $('Preparar artefacto Markdown').item.json.persistence_query }}",
+          "options": {
+            "queryBatching": "single"
+          }
+        },
+        "id": "s6",
+        "name": "Guardar guión creativo",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          608,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput",
+        "credentials": {
+          "postgres": {
+            "id": "W4eY9DPXPYbLfnbj",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const isDaily = $json.job_type === 'daily';\nconst subjectId = Number($json.subject_id);\nif (!Number.isSafeInteger(subjectId) || subjectId < 1) throw new Error('Invalid script subject');\nconst revision = String($execution.id ?? Date.now());\nconst sourceKind = isDaily ? 'daily' : 'individual';\nconst scriptUri = '/n8n-youtube-automation/Honi-Scripts/' + sourceKind + '-' + subjectId + '-' + revision + '.md';\nconst sqlLiteral = (value) => \"'\" + String(value).replaceAll(\"'\", \"''\") + \"'\";\nconst jobType = sourceKind;\nconst model = 'openai/gpt-6-luna';\nconst creativeJson = JSON.stringify($json.creative);\nconst yaml = (value) => JSON.stringify(String(value ?? ''));\nconst markdown = ['---', 'title: ' + yaml($json.creative.title), 'format: ' + yaml($json.creative.format), 'status: ' + yaml($json.creative.status), 'agent: \"Honi Creative Scriptwriter\"', 'prompt_version: \"honi_creative_scriptwriter@v1\"', 'model: ' + yaml(model), 'generated_at_utc: ' + yaml(new Date().toISOString()), '---', '', '# ' + $json.creative.title, '', $json.creative.script, ''].join('\\n');\nconst persistenceQuery = \"WITH saved_daily AS (INSERT INTO daily_news_scripts (queue_id,prompt_version,model,script_text,script_uri,status,raw_response,approval_status,approved_at_utc,production_status,production_prompt_version,production_model,production_response,production_uri) SELECT \" + subjectId + \",'honi_creative_scriptwriter@v1',\" + sqlLiteral(model) + ',' + sqlLiteral($json.script_text) + ',' + sqlLiteral(scriptUri) + \",CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'ready' ELSE 'failed' END,\" + sqlLiteral(creativeJson) + \"::jsonb,'pending',NULL,'blocked',NULL,NULL,NULL,NULL WHERE \" + sqlLiteral(jobType) + \"='daily' ON CONFLICT (queue_id) DO UPDATE SET prompt_version=EXCLUDED.prompt_version,model=EXCLUDED.model,script_text=EXCLUDED.script_text,script_uri=EXCLUDED.script_uri,status=EXCLUDED.status,raw_response=EXCLUDED.raw_response,approval_status='pending',approved_at_utc=NULL,production_status='blocked',production_prompt_version=NULL,production_model=NULL,production_response=NULL,production_uri=NULL,updated_at_utc=now() RETURNING id), saved_individual AS (INSERT INTO individual_scripts (article_id,classification_id,prompt_version,model,script_text,script_uri,status,raw_response,approval_status,approved_at_utc,production_status,production_prompt_version,production_model,production_response,production_uri) SELECT job.article_id,job.classification_id,'honi_creative_scriptwriter@v1',\" + sqlLiteral(model) + ',' + sqlLiteral($json.script_text) + ',' + sqlLiteral(scriptUri) + \",CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'ready' ELSE 'failed' END,\" + sqlLiteral(creativeJson) + \"::jsonb,'pending',NULL,'blocked',NULL,NULL,NULL,NULL FROM individual_script_jobs job WHERE \" + sqlLiteral(jobType) + \"='individual' AND job.article_id=\" + subjectId + \" ON CONFLICT (article_id) DO UPDATE SET classification_id=EXCLUDED.classification_id,prompt_version=EXCLUDED.prompt_version,model=EXCLUDED.model,script_text=EXCLUDED.script_text,script_uri=EXCLUDED.script_uri,status=EXCLUDED.status,raw_response=EXCLUDED.raw_response,approval_status='pending',approved_at_utc=NULL,production_status='blocked',production_prompt_version=NULL,production_model=NULL,production_response=NULL,production_uri=NULL,updated_at_utc=now() RETURNING id), updated_daily_job AS (UPDATE daily_news_script_jobs SET status=CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,lock_token=NULL,locked_at_utc=NULL,updated_at_utc=now() WHERE \" + sqlLiteral(jobType) + \"='daily' AND queue_id=\" + subjectId + \"), updated_daily_queue AS (UPDATE daily_news_queues SET status=CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,updated_at_utc=now() WHERE \" + sqlLiteral(jobType) + \"='daily' AND id=\" + subjectId + \"), updated_individual_job AS (UPDATE individual_script_jobs SET status=CASE WHEN \" + sqlLiteral(creativeJson) + \"::jsonb->>'status'='READY' THEN 'scripted' ELSE 'failed' END,lock_token=NULL,locked_at_utc=NULL,updated_at_utc=now() WHERE \" + sqlLiteral(jobType) + \"='individual' AND article_id=\" + subjectId + \") SELECT id FROM saved_daily UNION ALL SELECT id FROM saved_individual;\";\nreturn [{ json: { ...$json, script_uri: scriptUri, script_markdown: markdown, persistence_query: persistenceQuery } }];"
+        },
+        "id": "s5a",
+        "name": "Preparar artefacto Markdown",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          96,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "path": "={{ $json.script_uri }}",
+          "fileContent": "={{ $json.script_markdown }}"
+        },
+        "id": "s5b",
+        "name": "Guardar guión Markdown en OpenCloud",
+        "type": "n8n-nodes-base.nextCloud",
+        "typeVersion": 1,
+        "position": [
+          352,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000,
+        "onError": "continueErrorOutput",
+        "credentials": {
+          "nextCloudApi": {
+            "id": "EK8g12mTQNuoNYGX",
+            "name": "NextCloud account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const prompt = \"# HONI — PRODUCTION DIRECTOR\\n## System Prompt · V1.0\\n\\n### 1. IDENTITY & RESPONSIBILITY\\n\\nYou are the audiovisual production director for HONI, an English-speaking gaming news VTuber.\\n\\nYour responsibility is to transform an APPROVED spoken script into a structured, machine-readable production plan.\\n\\nThe script has already been written and editorially approved.\\n\\nYou are NOT a creative scriptwriter.\\n\\nYou are NOT allowed to rewrite, improve, shorten, expand, paraphrase, or reorder the narration.\\n\\nYour role is to decide HOW the approved script will be performed and visually presented.\\n\\nYour output will be consumed by a production pipeline using:\\n\\n- Fish Audio S2-Pro for speech synthesis.\\n- A VTuber avatar with predefined expressions.\\n- A caption generation system.\\n- Remotion for automated video composition.\\n\\nProduce precise, grounded, consistent, machine-actionable instructions.\\n\\n---\\n\\n### 2. INPUTS\\n\\nYou receive:\\n\\n**A. APPROVED_SCRIPT**\\n\\nThe complete JSON output from Honi Creative Scriptwriter.\\n\\nContains:\\n- Video format.\\n- Title.\\n- Hook.\\n- Complete narration.\\n- Story coverage.\\n- Word count.\\n- Estimated duration.\\n- Editorial notes.\\n\\n**B. EDITORIAL_PACKAGE**\\n\\nThe original selected editorial package.\\n\\nContains:\\n- Story IDs.\\n- Fact IDs.\\n- Important caveats.\\n- Available assets.\\n- Asset IDs and metadata.\\n\\nTreat the Creative Scriptwriter's `script` as immutable text.\\n\\nUse the original editorial package to resolve factual references and available assets.\\n\\nNever add new information to the narration.\\n\\n---\\n\\n### 3. IMMUTABLE NARRATION — ABSOLUTE RULE\\n\\nThe complete sequence of all `spoken_text` fields MUST reproduce `APPROVED_SCRIPT.script` exactly.\\n\\nYou may divide the script into beats, but you may not:\\n\\n- Change wording.\\n- Fix grammar.\\n- Change punctuation.\\n- Remove phrases.\\n- Add phrases.\\n- Reorder sentences.\\n- Add repeated words.\\n- Insert voice tags into the spoken text.\\n- Alter the meaning of any statement.\\n\\nReconstructing the original script from the ordered beats must yield exactly the approved narration.\\n\\nYou may segment at natural sentence boundaries.\\n\\nFor longer passages, divide at grammatically sensible phrase boundaries only when necessary.\\n\\nThe original wording and punctuation must remain unchanged.\\n\\nIf the approved script is invalid or unavailable, return a failure result rather than inventing replacement narration.\\n\\n---\\n\\n### 4. BEAT SEGMENTATION\\n\\nDivide the complete script into meaningful production beats.\\n\\nA beat is a coherent span of narration with a reasonably consistent emotional intention and visual focus.\\n\\nPreferred beat size:\\n- Approximately 1–3 sentences.\\n- Usually 15–45 spoken words.\\n- Shorter when a deliberate dramatic reaction warrants it.\\n\\nAvoid creating a beat for every word or tiny phrase.\\n\\nDo not split a sentence unless a meaningful visual or performance change requires it.\\n\\nEach beat must include:\\n\\n- Unique beat ID.\\n- Narrative role.\\n- Story ID.\\n- Exact spoken text.\\n- Supporting fact IDs.\\n- Voice direction.\\n- Avatar direction.\\n- Visual directions.\\n- Caption emphasis.\\n\\n### Available roles\\n\\n- `hook`\\n- `context`\\n- `development`\\n- `reaction`\\n- `transition`\\n- `conclusion`\\n\\nUse roles according to each beat's function.\\n\\nThe first beat must contain the opening hook.\\n\\nNot every video needs all six roles.\\n\\nDo not reorder the original script to fit these categories.\\n\\n---\\n\\n### 5. FACTUAL REFERENCE MAPPING\\n\\nFor each factual beat:\\n\\nAssign the relevant original `story_id`.\\n\\nAssign the relevant existing `supporting_fact_ids`.\\n\\nNever invent story IDs or fact IDs.\\n\\nIf a beat includes commentary without introducing a new factual claim, it may have an empty `supporting_fact_ids` array.\\n\\nFor beats containing factual statements, include the identifiers that actually support the statements.\\n\\nNever attach unrelated facts merely to populate an array.\\n\\nIf a factual claim cannot be mapped to supplied facts, report the discrepancy in `production_notes` rather than inventing support.\\n\\nPreserve the order of stories in `DAILY_ROUNDUP`.\\n\\n---\\n\\n### 6. VOICE DIRECTION — FISH AUDIO S2-PRO\\n\\nProduce natural voice-performance instructions for every beat.\\n\\nThe objective is to make Honi sound expressive, human, and emotionally believable.\\n\\nShe should not sound like a robotic newsreader or an overacting cartoon character.\\n\\n### Allowed control tags\\n\\nUse ONLY:\\n\\n- `[excited]`\\n- `[angry]`\\n- `[sad]`\\n- `[surprised]`\\n- `[sigh]`\\n- `[chuckle]`\\n- `[laughing]`\\n- `[short pause]`\\n- `[pause]`\\n- `[whisper]`\\n- `[emphasis]`\\n- `[professional broadcast tone]`\\n\\nDo not invent other tags.\\n\\nTreat the allowed tags as candidate synthesis controls, not guaranteed effects.\\n\\n### Voice-direction philosophy\\n\\nThe natural base voice should carry most of the script.\\n\\nOnly introduce control events where they add meaningful expression.\\n\\n#### Suggested mapping\\n\\n**Breaking or surprising revelation**\\n- Restrained `[surprised]` or `[excited]`.\\n\\n**Dry sarcasm**\\n- Neutral delivery.\\n- Deliberate timing.\\n- Sometimes a subtle `[sigh]`.\\n\\n**Corporate absurdity**\\n- Understated disbelief.\\n- Controlled emphasis.\\n\\n**Genuine excitement**\\n- `[excited]` when the story supports it.\\n\\n**Disappointment**\\n- Restrained `[sad]` or `[sigh]` when appropriate.\\n\\n**Playful amusement**\\n- Occasional `[chuckle]`.\\n\\n**Important punchline**\\n- A carefully placed `[short pause]` may help.\\n\\n**Serious factual reporting**\\n- Natural neutral delivery.\\n\\nAvoid constantly switching emotions.\\n\\nAvoid using `[laughing]` for every joke.\\n\\nAvoid attaching a tag to every sentence.\\n\\nAvoid excessive pauses.\\n\\n### Required voice fields\\n\\n`emotion`:\\nA short natural-language description of the intended emotion.\\n\\n`delivery_notes`:\\nSpecific guidance about pacing, emphasis, or attitude.\\n\\n`fish_tags`:\\nAn ordered array of permitted control events.\\n\\nEvery control event must contain:\\n\\n- `tag`: exact allowed tag.\\n- `anchor_text`: exact substring from the same beat's narration.\\n- `position`: either `before` or `after`.\\n\\nDo not include tags inside `spoken_text`.\\n\\nThe TTS adapter will interpret `fish_tags` separately.\\n\\n---\\n\\n### 7. AVATAR EXPRESSION DIRECTION\\n\\nUse ONLY these predefined avatar states:\\n\\n- `presenting`\\n- `excited`\\n- `deadpan_sigh`\\n- `excited_pointing`\\n- `angry`\\n- `sad_crying`\\n\\n### Expression definitions\\n\\n**presenting**\\n\\nDefault neutral or explanatory state.\\n\\nUse for most factual narration.\\n\\n**excited**\\n\\nVisible enthusiasm, surprise, or positive anticipation.\\n\\n**deadpan_sigh**\\n\\nSarcasm, cynicism, disappointment, or understated disbelief.\\n\\n**excited_pointing**\\n\\nAn emphatic visual reveal or a moment when directing attention toward an on-screen element is appropriate.\\n\\n**angry**\\n\\nStrong frustration or an appropriately critical reaction.\\n\\n**sad_crying**\\n\\nA genuinely emotional or intentionally exaggerated disappointed reaction.\\n\\nUse sparingly.\\n\\n### Avatar rules\\n\\n- Expressions should match the narration.\\n- Do not switch expressions unnecessarily.\\n- Neutral narration should generally use `presenting`.\\n- Prioritize a few meaningful changes over constant animation.\\n- Avoid extreme expressions for minor statements.\\n- Never select expressions outside the allowed set.\\n\\nEach beat must have one avatar state.\\n\\n`avatar.asset_id` must contain the selected predefined state.\\n\\n`avatar.change_anchor` must be an exact substring of the same beat's `spoken_text`.\\n\\n`avatar.reason` must concisely explain the choice.\\n\\nA beat's avatar state applies from its change anchor onward until superseded by another state.\\n\\n---\\n\\n### 8. VISUAL STORYTELLING\\n\\nVisuals must complement the narration and improve viewer comprehension.\\n\\nThe intended output is a vertical short-form gaming news video.\\n\\nPossible visual resources include:\\n\\n- Gameplay footage.\\n- Official trailers.\\n- Screenshots.\\n- Article imagery.\\n- Relevant social media posts.\\n- Official statements.\\n- Supplied promotional images.\\n- Other assets included in the editorial package.\\n\\nNever invent available assets.\\n\\n### Asset referencing\\n\\nIf an appropriate asset exists in the supplied editorial package:\\n\\nUse its exact `asset_id`.\\n\\nIf a visual would help but no corresponding asset has been supplied:\\n\\nSet `asset_id` to `null`.\\n\\nDescribe the requested visual clearly in `asset_request`.\\n\\nAn unresolved asset request is NOT proof that the asset exists.\\n\\n### Supported visual effects\\n\\nUse ONLY:\\n\\n- `none`\\n- `cut`\\n- `slow_zoom`\\n- `emphasis`\\n\\n### Effect guidelines\\n\\n**cut**\\n\\nSwitch to a relevant visual or introduce new information.\\n\\n**slow_zoom**\\n\\nDraw attention toward a meaningful screenshot, detail, or reveal.\\n\\n**emphasis**\\n\\nHighlight a particularly important element.\\n\\n**none**\\n\\nUse when no additional effect is necessary.\\n\\nAvoid unnecessary visual effects.\\n\\n### Timing anchors\\n\\nEach visual instruction must contain a `trigger_text`.\\n\\nThe trigger must exactly match a substring within the corresponding beat's `spoken_text`.\\n\\nThis text will later be aligned with generated narration.\\n\\nDo not invent millisecond timestamps.\\n\\nVisual timing is defined through textual anchors until actual speech alignment becomes available.\\n\\n---\\n\\n### 9. CAPTION EMPHASIS\\n\\nCaptions are generated from the approved spoken narration.\\n\\nDo not rewrite caption wording.\\n\\nChoose short and important phrases for visual emphasis.\\n\\nUse emphasis sparingly for:\\n\\n- Key revelations.\\n- Important numbers.\\n- Game titles.\\n- Major developments.\\n- Strong sarcastic observations.\\n- Significant contradictions.\\n\\nEach entry in `caption_emphasis` must exactly match a substring of the same beat's `spoken_text`.\\n\\nDo not emphasize every word.\\n\\nDo not include invented text.\\n\\nThe caption system will handle word-level synchronization after the audio is generated.\\n\\n---\\n\\n### 10. PRODUCTION PACING\\n\\nThe video should feel polished, dynamic, and naturally paced.\\n\\nDo not equate engagement with constant cuts or endless visual stimulation.\\n\\nLet important moments breathe.\\n\\nCreate contrast between:\\n\\n- Straightforward reporting.\\n- Exciting reveals.\\n- Deadpan reactions.\\n- Important clarifications.\\n- Final punchlines.\\n\\nDo not force an avatar reaction on every sarcastic remark.\\n\\nDo not constantly interrupt narration with visual transitions.\\n\\nThe voice performance, avatar, captions, and visual assets should support the same emotional intention.\\n\\nFor example:\\n\\nA deadpan sarcastic line should not automatically receive an excited avatar expression, an aggressive zoom, and loud laughter.\\n\\nConsistency matters more than exaggerated activity.\\n\\n---\\n\\n### 11. INTERNAL PRODUCTION WORKFLOW\\n\\nPerform these steps internally:\\n\\n**STEP 1 — VALIDATE INPUT**\\n\\nConfirm that `APPROVED_SCRIPT.status` is `READY`.\\n\\nConfirm that the complete narration exists.\\n\\nConfirm that the original editorial package is available.\\n\\n**STEP 2 — SEGMENT THE NARRATION**\\n\\nDivide the approved script into coherent production beats.\\n\\nKeep the narration unchanged.\\n\\n**STEP 3 — MAP FACT REFERENCES**\\n\\nAssociate each beat with relevant existing story and fact IDs.\\n\\n**STEP 4 — PLAN VOICE PERFORMANCE**\\n\\nIdentify emotional changes, emphasis, sarcasm, and intentional pauses.\\n\\nAssign restrained control events.\\n\\n**STEP 5 — DIRECT THE AVATAR**\\n\\nChoose the most appropriate avatar state for each beat.\\n\\nPrefer consistent expressions over unnecessary switching.\\n\\n**STEP 6 — DESIGN VISUALS**\\n\\nUse available assets wherever appropriate.\\n\\nDescribe unresolved asset requests where useful.\\n\\nChoose visual triggers and effects.\\n\\n**STEP 7 — PLAN CAPTION EMPHASIS**\\n\\nSelect short, meaningful phrases.\\n\\n**STEP 8 — VALIDATE ALL ANCHORS**\\n\\nEvery anchor must occur exactly in its corresponding beat's narration.\\n\\n**STEP 9 — VALIDATE SCRIPT INTEGRITY**\\n\\nConcatenate all beat narration in order, using the original segmentation boundaries.\\n\\nVerify that the result equals the input script character-for-character.\\n\\nDo not silently alter punctuation or whitespace.\\n\\nIf exact reconstruction is impossible, return a failure result.\\n\\n---\\n\\n### 12. OUTPUT CONTRACT\\n\\nReturn exactly ONE valid JSON object.\\n\\nNo Markdown.\\n\\nNo additional commentary.\\n\\nNo additional fields.\\n\\n#### SUCCESS\\n\\n```json\\n{\\n  \\\"status\\\": \\\"READY\\\",\\n  \\\"failure_reason\\\": null,\\n  \\\"title\\\": \\\"Approved English working title\\\",\\n  \\\"format\\\": \\\"SINGLE_NEWS\\\",\\n  \\\"hook\\\": {\\n    \\\"type\\\": \\\"Conflict\\\",\\n    \\\"rationale\\\": \\\"Original approved hook rationale.\\\"\\n  },\\n  \\\"beats\\\": [\\n    {\\n      \\\"beat_id\\\": \\\"b01\\\",\\n      \\\"role\\\": \\\"hook\\\",\\n      \\\"story_id\\\": \\\"existing story ID or null\\\",\\n      \\\"spoken_text\\\": \\\"Exact unchanged fragment of the approved narration.\\\",\\n      \\\"supporting_fact_ids\\\": [\\\"existing fact ID\\\"],\\n      \\\"voice\\\": {\\n        \\\"emotion\\\": \\\"Dry disbelief\\\",\\n        \\\"delivery_notes\\\": \\\"Calm, slightly incredulous, with controlled emphasis.\\\",\\n        \\\"fish_tags\\\": [\\n          {\\n            \\\"tag\\\": \\\"[short pause]\\\",\\n            \\\"anchor_text\\\": \\\"Exact spoken phrase\\\",\\n            \\\"position\\\": \\\"after\\\"\\n          }\\n        ]\\n      },\\n      \\\"avatar\\\": {\\n        \\\"asset_id\\\": \\\"deadpan_sigh\\\",\\n        \\\"change_anchor\\\": \\\"Exact spoken phrase\\\",\\n        \\\"reason\\\": \\\"Understated sarcastic reaction.\\\"\\n      },\\n      \\\"visuals\\\": [\\n        {\\n          \\\"asset_type\\\": \\\"screenshot\\\",\\n          \\\"asset_request\\\": \\\"Relevant image illustrating the current narration.\\\",\\n          \\\"asset_id\\\": null,\\n          \\\"trigger_text\\\": \\\"Exact spoken phrase\\\",\\n          \\\"effect\\\": \\\"slow_zoom\\\"\\n        }\\n      ],\\n      \\\"caption_emphasis\\\": [\\\"Exact spoken phrase\\\"]\\n    }\\n  ],\\n  \\\"production_notes\\\": []\\n}\\n```\\n\\nThis is a structural example only.\\n\\nAll identifiers, anchors, text, and details must be resolved from the actual inputs.\\n\\nDo not copy example placeholder strings into a real output.\\n\\n`format`, `title`, and `hook` must preserve the approved Creative Scriptwriter output.\\n\\n`beats` must cover the entire approved narration without loss or modification.\\n\\n`production_notes` may contain genuine production issues or unresolved requirements.\\n\\n#### FAILURE\\n\\n```json\\n{\\n  \\\"status\\\": \\\"INVALID_INPUT\\\",\\n  \\\"failure_reason\\\": \\\"Specific explanation of missing or invalid input.\\\",\\n  \\\"title\\\": \\\"\\\",\\n  \\\"format\\\": \\\"SINGLE_NEWS\\\",\\n  \\\"hook\\\": {\\n    \\\"type\\\": \\\"Curiosity\\\",\\n    \\\"rationale\\\": \\\"\\\"\\n  },\\n  \\\"beats\\\": [],\\n  \\\"production_notes\\\": []\\n}\\n```\\n\\nUse `INVALID_INPUT` if the approved script is missing, invalid, or cannot be segmented without violating the immutable narration rule.\\n\\n---\\n\\n### 13. FINAL VALIDATION\\n\\nBefore returning READY, verify:\\n\\n1. Input script is approved.\\n2. Every spoken word is preserved.\\n3. Every punctuation mark is preserved.\\n4. No extra narration has been introduced.\\n5. Beat order matches the original narration.\\n6. Every story reference exists.\\n7. Every fact reference exists.\\n8. Every visual asset ID exists or is null.\\n9. Every Fish Audio tag belongs to the allowed set.\\n10. Every avatar state belongs to the allowed set.\\n11. Every textual anchor is an exact substring of its beat.\\n12. Every selected visual effect is valid.\\n13. Every caption emphasis is grounded in narration.\\n14. The JSON structure is valid.\\n15. No timestamps were fabricated.\\n\\n**The Creative Scriptwriter creates Honi's voice. The Production Director gives that voice a performance. Never confuse those responsibilities.**\";\nconst creative = $node['Validar guión creativo'].json.creative;\nconst editorialPackage = $node['Preparar paquete editorial'].json.editorial_package;\nconst artifact = $node['Preparar artefacto Markdown'].json;\nconst subjectId = Number(artifact.subject_id);\nif (!Number.isInteger(subjectId)) throw new Error('Invalid production subject ID');\nconst production_start_query = artifact.job_type === 'daily'\n  ? `UPDATE daily_news_scripts SET production_status='processing', updated_at_utc=now() WHERE queue_id=${subjectId} AND status='ready';`\n  : `UPDATE individual_scripts SET production_status='processing', updated_at_utc=now() WHERE article_id=${subjectId} AND status='ready';`;\nreturn [{ json: { creative, editorialPackage, production_start_query, chatInput: `${prompt}\\n\\nAPPROVED_SCRIPT:\\n${JSON.stringify(creative)}\\n\\nEDITORIAL_PACKAGE:\\n${JSON.stringify(editorialPackage)}` } }];"
+        },
+        "id": "prod-prep",
+        "name": "Preparar Production Director",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          864,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.chatInput }}",
+          "batching": {
+            "batchSize": 1,
+            "delayBetweenBatches": 0
+          }
+        },
+        "id": "prod-chain",
+        "name": "Production Director con LiteLLM",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.9,
+        "position": [
+          1632,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const raw = $json.text ?? $json.response ?? $json.output ?? JSON.stringify($json);\nlet production; try { production = JSON.parse(raw); } catch { throw new Error('Production Director returned invalid JSON'); }\nconst creativeState = $node['Validar guión creativo'].json;\nif (production.status !== 'READY' || !Array.isArray(production.beats)) throw new Error('Invalid production contract');\nif (production.title !== creativeState.creative.title || production.format !== creativeState.creative.format) throw new Error('Production metadata changed');\nconst spoken = production.beats.map((beat) => beat.spoken_text).join(' ');\nif (spoken.replace(/\\s+/g, ' ').trim() !== creativeState.creative.script.replace(/\\s+/g, ' ').trim()) throw new Error('Production Director rewrote approved narration');\nconst jobType = creativeState.job_type;\nconst subjectId = Number(creativeState.subject_id);\nif (!['daily', 'individual'].includes(jobType) || !Number.isSafeInteger(subjectId)) throw new Error('Invalid production subject');\nconst sourceKind = jobType === 'daily' ? 'daily' : 'individual';\nconst productionUri = '/n8n-youtube-automation/Honi-Production/' + sourceKind + '-' + subjectId + '-' + String($execution.id) + '.json';\nconst productionJson = JSON.stringify(production, null, 2);\nconst sqlLiteral = (value) => \"'\" + String(value).replaceAll(\"'\", \"''\") + \"'\";\nconst productionModel = 'openai/gpt-6-luna';\nconst productionPromptVersion = 'honi_production_director@v1';\nconst productionStartQuery = jobType === 'daily'\n  ? \"UPDATE daily_news_scripts SET production_status='processing', updated_at_utc=now() WHERE queue_id=\" + subjectId + \" AND status='ready';\"\n  : \"UPDATE individual_scripts SET production_status='processing', updated_at_utc=now() WHERE article_id=\" + subjectId + \" AND status='ready';\";\nconst productionPersistenceQuery = jobType === 'daily'\n  ? \"UPDATE daily_news_scripts SET production_status='ready', production_prompt_version=\" + sqlLiteral(productionPromptVersion) + ', production_model=' + sqlLiteral(productionModel) + ', production_response=' + sqlLiteral(productionJson) + '::jsonb, production_uri=' + sqlLiteral(productionUri) + \", updated_at_utc=now() WHERE queue_id=\" + subjectId + \" AND status='ready' AND production_status='processing';\"\n  : \"UPDATE individual_scripts SET production_status='ready', production_prompt_version=\" + sqlLiteral(productionPromptVersion) + ', production_model=' + sqlLiteral(productionModel) + ', production_response=' + sqlLiteral(productionJson) + '::jsonb, production_uri=' + sqlLiteral(productionUri) + \", updated_at_utc=now() WHERE article_id=\" + subjectId + \" AND status='ready' AND production_status='processing';\";\nreturn [{ json: { job_type: jobType, subject_id: subjectId, production, creative: creativeState.creative, production_uri: productionUri, production_json: productionJson, production_start_query: productionStartQuery, production_persistence_query: productionPersistenceQuery } }];"
+        },
+        "id": "prod-validate",
+        "name": "Validar Production Director",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1888,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "path": "={{ $json.production_uri }}",
+          "fileContent": "={{ $json.production_json }}"
+        },
+        "id": "prod-upload",
+        "name": "Guardar Production Plan en Nextcloud",
+        "type": "n8n-nodes-base.nextCloud",
+        "typeVersion": 1,
+        "position": [
+          2144,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput",
+        "credentials": {
+          "nextCloudApi": {
+            "id": "EK8g12mTQNuoNYGX",
+            "name": "NextCloud account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "id",
+            "value": "openai/gpt-6-luna"
+          },
+          "responsesApiEnabled": false,
+          "options": {
+            "responseFormat": "json_object"
+          }
+        },
+        "id": "production-gpt-luna",
+        "name": "Production GPT-6 Luna",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          1632,
+          448
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "GNQrp8APS8ixEiFx",
+            "name": "OpenAI account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "{{ $json.production_start_query }}",
+          "options": {
+            "queryBatching": "single"
+          }
+        },
+        "id": "production-start",
+        "name": "Registrar Production procesando",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1120,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "onError": "continueErrorOutput",
+        "credentials": {
+          "postgres": {
+            "id": "W4eY9DPXPYbLfnbj",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "{{ $('Validar Production Director').item.json.production_persistence_query }}",
+          "options": {
+            "queryBatching": "single"
+          }
+        },
+        "id": "production-persist",
+        "name": "Guardar Production Plan en PostgreSQL",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          2400,
+          160
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 1000,
+        "onError": "continueErrorOutput",
+        "credentials": {
+          "postgres": {
+            "id": "W4eY9DPXPYbLfnbj",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH daily_job AS (UPDATE daily_news_script_jobs SET status = CASE WHEN attempts >= 3 THEN 'failed' ELSE 'retry' END, lock_token = NULL, locked_at_utc = NULL, last_error = $1, updated_at_utc = now() WHERE $2 = 'daily' AND queue_id = $3::bigint AND status IN ('processing', 'scripted') RETURNING queue_id, status), daily_queue AS (UPDATE daily_news_queues queue SET status = CASE WHEN daily_job.status = 'failed' THEN 'failed' ELSE 'script_pending' END, updated_at_utc = now() FROM daily_job WHERE queue.id = daily_job.queue_id), individual_job AS (UPDATE individual_script_jobs SET status = CASE WHEN attempts >= 3 THEN 'failed' ELSE 'retry' END, lock_token = NULL, locked_at_utc = NULL, last_error = $1, updated_at_utc = now() WHERE $2 = 'individual' AND article_id = $3::bigint AND status IN ('processing', 'scripted') RETURNING article_id, status), individual_script AS (UPDATE individual_scripts script SET production_status = CASE WHEN individual_job.status = 'failed' THEN 'failed' ELSE 'retry' END, updated_at_utc = now() FROM individual_job WHERE script.article_id = individual_job.article_id) UPDATE daily_news_scripts script SET production_status = CASE WHEN daily_job.status = 'failed' THEN 'failed' ELSE 'retry' END, updated_at_utc = now() FROM daily_job JOIN daily_news_queues queue ON queue.id = daily_job.queue_id WHERE script.queue_id = queue.id;",
+          "options": {
+            "queryBatching": "single",
+            "queryReplacement": "={{ [String($json.error?.message ?? $json.error?.description ?? 'Script production failed'), String($json.job_type ?? ''), Number($json.subject_id ?? 0)] }}"
+          }
+        },
+        "id": "record-script-failure",
+        "name": "Registrar fallo de guión",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1328,
+          944
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "W4eY9DPXPYbLfnbj",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "return [{ json: $node['Preparar Production Director'].json }];"
+        },
+        "id": "999af5f5-62c4-455e-83a4-450a2f0b3824",
+        "name": "Restaurar entrada Production",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1376,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "operation": "sendAndWait",
+          "guildId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1563915257712480399"
+          },
+          "channelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1564318790785699880"
+          },
+          "message": "=## Decisión editorial requerida\n\n**{{ $('Preparar Markdown de revisión').item.json.creative.title }}**\n\nEl Markdown completo con las etiquetas Fish ya fue adjuntado en el mensaje anterior. Revisa texto, emociones y delivery.\n\nSólo **Aprobar** iniciará la narración con Fish Audio.",
+          "approvalOptions": {
+            "values": {
+              "approvalType": "double",
+              "approveLabel": "Aprobar",
+              "disapproveLabel": "Rechazar"
+            }
+          },
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "id": "discord-review-request",
+        "name": "Solicitar aprobación en Discord",
+        "type": "n8n-nodes-base.discord",
+        "typeVersion": 2,
+        "position": [
+          3936,
+          160
+        ],
+        "webhookId": "cfe8b54e-c15e-4c25-ac6b-fec138c6b69a",
+        "notes": "Asocia la credencial n8n Discord Bot API después de crearla. El canal debe ser privado para el editor y el bot.",
+        "credentials": {
+          "discordBotApi": {
+            "id": "ZFTZYj1tAlLL2MZt",
+            "name": "Discord Bot account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const source = $node['Preparar Markdown de revisión'].json;\nconst approved = $json.data?.approved;\nif (typeof approved !== 'boolean') {\n  throw new Error('Discord approval response is missing. The script remains pending review.');\n}\nconst subjectId = Number(source.subject_id);\nif (!Number.isSafeInteger(subjectId) || !['daily', 'individual'].includes(source.job_type)) {\n  throw new Error('Invalid editorial subject for Discord decision.');\n}\nconst table = source.job_type === 'daily' ? 'daily_news_scripts' : 'individual_scripts';\nconst key = source.job_type === 'daily' ? 'queue_id' : 'article_id';\nconst status = approved ? 'approved' : 'rejected';\nconst approvedAt = approved ? 'approved_at_utc = now(),' : 'approved_at_utc = NULL,';\nconst reviewDecisionQuery = \"UPDATE \" + table + \" SET approval_status='\" + status + \"', \" + approvedAt + \" updated_at_utc=now() WHERE \" + key + \"=\" + subjectId + \" AND status='ready' AND production_status='ready' AND approval_status='pending' RETURNING id, approval_status, approved_at_utc;\";\nreturn [{ json: { ...source, approved, review_decision_query: reviewDecisionQuery, reviewed_at_utc: $json.data.respondedAt ?? null } }];"
+        },
+        "id": "prepare-discord-decision",
+        "name": "Preparar decisión Discord",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4192,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.approved }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "route-discord-decision",
+        "name": "¿Guión aprobado?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          4448,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "{{ $json.review_decision_query }}",
+          "options": {
+            "queryBatching": "single"
+          }
+        },
+        "id": "record-discord-approval",
+        "name": "Registrar aprobación de guión",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          4704,
+          64
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "W4eY9DPXPYbLfnbj",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "{{ $json.review_decision_query }}",
+          "options": {
+            "queryBatching": "single"
+          }
+        },
+        "id": "record-discord-rejection",
+        "name": "Registrar rechazo de guión",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          4704,
+          272
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "W4eY9DPXPYbLfnbj",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "mZ1aDnHvsCgmCHr9",
+            "cachedResultName": "05 — Production Plan → Fish Audio API"
+          },
+          "options": {
+            "waitForSubWorkflow": false
+          }
+        },
+        "id": "start-voice-production",
+        "name": "Iniciar Voice Production",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.4,
+        "position": [
+          4960,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## Aprobación manual\n\n1. Crea la credencial **Discord Bot API** en n8n y asígnala a `Solicitar aprobación en Discord`.\n2. Configura `DISCORD_GUILD_ID` y `DISCORD_REVIEW_CHANNEL_ID` en el entorno de n8n.\n3. Mantén `#honi-review` privado: editor autorizado + bot.\n\nLa ejecución queda en espera hasta pulsar **Aprobar** o **Rechazar**.",
+          "height": 180,
+          "width": 640
+        },
+        "id": "discord-review-note",
+        "name": "Configuración de revisión Discord",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          3680,
+          -96
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const source = $json?.production && $json?.creative ? $json : $node['Validar Production Director'].json;\nconst artifact = typeof $json?.script_uri === 'string' ? $json : $node['Preparar artefacto Markdown'].json;\nconst allowedTags = new Set(['[excited]', '[angry]', '[sad]', '[surprised]', '[sigh]', '[chuckle]', '[laughing]', '[short pause]', '[pause]', '[whisper]', '[emphasis]', '[professional broadcast tone]']);\nconst script = source.creative?.script;\nif (typeof script !== 'string' || !script.trim() || !source.production?.beats?.length) throw new Error('Missing creative script or production beats for review Markdown.');\nconst insertions = [];\nlet beatOffset = 0;\nfor (const beat of source.production.beats) {\n  if (typeof beat.spoken_text !== 'string') throw new Error('Each production beat requires spoken_text.');\n  const tags = beat.voice?.fish_tags ?? [];\n  if (!Array.isArray(tags)) throw new Error('fish_tags must be an array.');\n  for (let order = 0; order < tags.length; order += 1) {\n    const control = tags[order];\n    if (!allowedTags.has(control.tag) || !['before', 'after'].includes(control.position) || typeof control.anchor_text !== 'string' || !control.anchor_text) throw new Error('Invalid Fish control event in Production Plan.');\n    const localOffset = beat.spoken_text.indexOf(control.anchor_text);\n    if (localOffset < 0) throw new Error('Fish tag anchor was not found: ' + control.anchor_text);\n    insertions.push({ offset: beatOffset + localOffset + (control.position === 'after' ? control.anchor_text.length : 0), tag: control.tag, order });\n  }\n  beatOffset += beat.spoken_text.length;\n}\nlet taggedScript = script;\nfor (const insertion of insertions.sort((a, b) => b.offset - a.offset || b.order - a.order)) taggedScript = taggedScript.slice(0, insertion.offset) + insertion.tag + taggedScript.slice(insertion.offset);\nconst tagPattern = /\\[(excited|angry|sad|surprised|sigh|chuckle|laughing|short pause|pause|whisper|emphasis|professional broadcast tone)\\]/g;\nif (taggedScript.replace(tagPattern, '') !== script) throw new Error('Tagged Markdown changed the canonical narration.');\nconst tagBeat = (beat) => {\n  const events = [];\n  const tags = beat.voice?.fish_tags ?? [];\n  for (let order = 0; order < tags.length; order += 1) {\n    const control = tags[order];\n    const localOffset = beat.spoken_text.indexOf(control.anchor_text);\n    events.push({ offset: localOffset + (control.position === 'after' ? control.anchor_text.length : 0), tag: control.tag, order });\n  }\n  let tagged = beat.spoken_text;\n  for (const event of events.sort((a, b) => b.offset - a.offset || b.order - a.order)) tagged = tagged.slice(0, event.offset) + event.tag + tagged.slice(event.offset);\n  return tagged.replace(/\\s*(?=\\[(excited|angry|sad|surprised|sigh|chuckle|laughing|short pause|pause|whisper|emphasis|professional broadcast tone)\\])/g, '\\n');\n};\nconst markdown = ['# ' + source.creative.title, '', ...source.production.beats.flatMap((beat) => [tagBeat(beat), ''])].join('\\n');\nconst scriptUri = source.script_uri ?? artifact.script_uri;\nif (typeof scriptUri !== 'string' || !scriptUri.endsWith('.md')) throw new Error('Review Markdown path is invalid.');\nreturn [{ json: { ...source, script_uri: scriptUri, script_markdown: markdown, review_filename: scriptUri.split('/').pop() } }];"
+        },
+        "id": "prepare-tagged-review-markdown",
+        "name": "Preparar Markdown de revisión",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2656,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "path": "={{ $json.script_uri }}",
+          "fileContent": "={{ $json.script_markdown }}"
+        },
+        "id": "save-tagged-review-markdown",
+        "name": "Guardar Markdown de revisión en OpenCloud",
+        "type": "n8n-nodes-base.nextCloud",
+        "typeVersion": 1,
+        "position": [
+          2912,
+          160
+        ],
+        "credentials": {
+          "nextCloudApi": {
+            "id": "EK8g12mTQNuoNYGX",
+            "name": "NextCloud account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "return [{ json: $node['Preparar Markdown de revisión'].json }];"
+        },
+        "id": "restore-tagged-review-markdown",
+        "name": "Restaurar Markdown para Discord",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3168,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "toText",
+          "sourceProperty": "script_markdown",
+          "binaryPropertyName": "review_markdown",
+          "options": {
+            "encoding": "utf8",
+            "fileName": "={{ $json.review_filename }}"
+          }
+        },
+        "id": "markdown-to-discord-file",
+        "name": "Convertir Markdown para Discord",
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          3424,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "guildId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1563915257712480399"
+          },
+          "channelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1564318790785699880"
+          },
+          "content": "=## Guión Honi para revisión\n\nAdjunto: **{{ $('Preparar Markdown de revisión').item.json.review_filename }}**",
+          "options": {},
+          "files": {
+            "values": [
+              {
+                "inputFieldName": "review_markdown"
+              }
+            ]
+          }
+        },
+        "id": "send-markdown-discord",
+        "name": "Enviar Markdown completo a Discord",
+        "type": "n8n-nodes-base.discord",
+        "typeVersion": 2,
+        "position": [
+          3680,
+          160
+        ],
+        "webhookId": "d007a40a-046e-4334-a7b6-c3cfb34dc9f2",
+        "credentials": {
+          "discordBotApi": {
+            "id": "ZFTZYj1tAlLL2MZt",
+            "name": "Discord Bot account"
+          }
+        }
+      },
+      {
+        "id": "b7fc8860-5f2f-4fe7-9e6b-66051d0c38f1",
+        "name": "Iniciar guión desde editorial",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -1184,
+          304
+        ],
+        "parameters": {
+          "inputSource": "passthrough"
+        }
+      },
+      {
+        "id": "db1047d7-ff33-409b-9e72-6cdb77431648",
+        "name": "Normalizar solicitud de guión",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -928,
+          304
+        ],
+        "parameters": {
+          "jsCode": "const jobType = $json.job_type ?? null;\nconst subjectId = $json.subject_id ?? null;\nif (jobType === null && subjectId === null) return [{ json: { job_type: null, subject_id: null } }];\nif (!['individual', 'daily'].includes(jobType) || !Number.isInteger(Number(subjectId))) throw new Error('Solicitud de guión inválida: se requiere job_type y subject_id');\nreturn [{ json: { job_type: jobType, subject_id: Number(subjectId) } }];"
+        }
+      },
+      {
+        "id": "917ee1d8-e50d-41bc-8dfe-764d766e0f89",
+        "name": "Despachar guiones pendientes manuales",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -928,
+          160
+        ],
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT 'daily'::text AS job_type, job.queue_id AS subject_id FROM daily_news_script_jobs AS job WHERE job.status IN ('pending', 'retry') UNION ALL SELECT 'individual'::text AS job_type, job.article_id AS subject_id FROM individual_script_jobs AS job WHERE job.status IN ('pending', 'retry') ORDER BY job_type, subject_id;",
+          "options": {
+            "queryBatching": "single"
+          }
+        },
+        "credentials": {
+          "postgres": {
+            "id": "W4eY9DPXPYbLfnbj",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "id": "e54f4e96-6039-4664-8358-d54f285772db",
+        "name": "Iniciar guiones pendientes manuales",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          -672,
+          160
+        ],
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "zGsUUkJ8vONVTclX",
+            "cachedResultName": "04 — Editorial — Creative + Production"
+          },
+          "options": {
+            "waitForSubWorkflow": false
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Preparar paquete editorial": {
+        "main": [
+          [
+            {
+              "node": "Crear guión con LiteLLM",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Crear guión con LiteLLM": {
+        "main": [
+          [
+            {
+              "node": "Validar guión creativo",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reclamar trabajo de guión": {
+        "main": [
+          [
+            {
+              "node": "Preparar paquete editorial",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar artefacto Markdown": {
+        "main": [
+          [
+            {
+              "node": "Guardar guión Markdown en OpenCloud",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar guión Markdown en OpenCloud": {
+        "main": [
+          [
+            {
+              "node": "Guardar guión creativo",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar guión creativo": {
+        "main": [
+          [
+            {
+              "node": "Preparar artefacto Markdown",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Production Director": {
+        "main": [
+          [
+            {
+              "node": "Registrar Production procesando",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Production Director con LiteLLM": {
+        "main": [
+          [
+            {
+              "node": "Validar Production Director",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar Production Director": {
+        "main": [
+          [
+            {
+              "node": "Guardar Production Plan en Nextcloud",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Creative GPT-6 Luna": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Crear guión con LiteLLM",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Production GPT-6 Luna": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Production Director con LiteLLM",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar guión creativo": {
+        "main": [
+          [
+            {
+              "node": "Preparar Production Director",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Registrar Production procesando": {
+        "main": [
+          [
+            {
+              "node": "Restaurar entrada Production",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Production Plan en Nextcloud": {
+        "main": [
+          [
+            {
+              "node": "Guardar Production Plan en PostgreSQL",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Production Plan en PostgreSQL": {
+        "main": [
+          [
+            {
+              "node": "Preparar Markdown de revisión",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar fallo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Restaurar entrada Production": {
+        "main": [
+          [
+            {
+              "node": "Production Director con LiteLLM",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Solicitar aprobación en Discord": {
+        "main": [
+          [
+            {
+              "node": "Preparar decisión Discord",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar decisión Discord": {
+        "main": [
+          [
+            {
+              "node": "¿Guión aprobado?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Guión aprobado?": {
+        "main": [
+          [
+            {
+              "node": "Registrar aprobación de guión",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Registrar rechazo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Registrar aprobación de guión": {
+        "main": [
+          [
+            {
+              "node": "Iniciar Voice Production",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Markdown de revisión": {
+        "main": [
+          [
+            {
+              "node": "Guardar Markdown de revisión en OpenCloud",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Markdown de revisión en OpenCloud": {
+        "main": [
+          [
+            {
+              "node": "Restaurar Markdown para Discord",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Restaurar Markdown para Discord": {
+        "main": [
+          [
+            {
+              "node": "Convertir Markdown para Discord",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convertir Markdown para Discord": {
+        "main": [
+          [
+            {
+              "node": "Enviar Markdown completo a Discord",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Markdown completo a Discord": {
+        "main": [
+          [
+            {
+              "node": "Solicitar aprobación en Discord",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Iniciar guión desde editorial": {
+        "main": [
+          [
+            {
+              "node": "Normalizar solicitud de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalizar solicitud de guión": {
+        "main": [
+          [
+            {
+              "node": "Reclamar trabajo de guión",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Probar guión manual": {
+        "main": [
+          [
+            {
+              "node": "Despachar guiones pendientes manuales",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Despachar guiones pendientes manuales": {
+        "main": [
+          [
+            {
+              "node": "Iniciar guiones pendientes manuales",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [
+      {
+        "id": "19d62e03-4c21-4f20-a615-1464f13ccff0",
+        "name": "Manejo de fallos",
+        "nodeNames": [
+          "Registrar fallo de guión"
+        ]
+      }
+    ]
+  },
   "meta": {
     "aiBuilderAssisted": true,
     "builderVariant": "mcp"
